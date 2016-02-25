@@ -1,9 +1,7 @@
 =============================================
 **Simulation of LDPC Codes & Applications**
 =============================================
-*version 0.6.2*
-
-**Bug-fix release**
+*version 0.7.0*
 
 In Brief:
 ---------
@@ -23,29 +21,44 @@ In Brief:
 
  `Sound Transmission <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/Example-Sound.ipynb>`_
 
+
+Installation
+------------
+
+From pip::
+
+    $ pip install --upgrade pyldpc
+    
+Requiries: numpy, scipy, automatically installed with pip. 
+    
 Tutorials:
 ----------
 
-Jupyter notebooks:
+Jupyter notebooks: 
+
+
+*Many changes in tutorials in v.0.7.0*
 
 - Users' Guide: 
 
 1- `LDPC Coding-Decoding Simulation
-<http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Tutorial-Basics.ipynb>`_
+<http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Tutorial-Basics.ipynb?flush_cache=true>`_
 
 2- `Images Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Tutorial-Images.ipynb?flush_cache=true>`_
 
 3- `Sound Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Tutorial-Sound.ipynb?flush_cache=true>`_
 
+4- `LDPC Matrices Construction Tutorial <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Tutorial-Matrices.ipynb?flush_cache=true>`_
+
 - For LDPC construction details:
 
-1- `pyLDPC Construction <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Presentation.ipynb>`_
+1- `pyLDPC Construction(French) <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Presentation.ipynb?flush_cache=true>`_
 
-2- `LDPC Images Functions Construction <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Images-Construction.ipynb>`_
+2- `LDPC Images Functions Construction <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Images-Construction.ipynb?flush_cache=true>`_
  
-3- `LDPC Sound Functions Construction <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Sound-Construction.ipynb>`_
+3- `LDPC Sound Functions Construction <http://nbviewer.jupyter.org/github/janatiH/pyldpc/blob/master/pyLDPC-Sound-Construction.ipynb?flush_cache=true>`_
 
-version 0.6.2
+version 0.7.0
 -------------
 
  **Contains:**
@@ -58,8 +71,9 @@ version 0.6.2
     - Default BP algorithm.
     - Full-log BP algorithm.
 4. Images transmission sub-module:
-    - Coding and Decoding Grayscale Images.
-    - Coding and Decoding RGB Images.
+    - Coding and Decoding Grayscale and RGB Images.
+    - Pixel by pixel coding & decoding (small matrices)
+    - Row by row coding & decoding (large sparse matrices)
     - BER: Bit Error Rate function.
 5. Sound transmission sub-module:
     - Coding and Decoding audio files.
@@ -67,15 +81,17 @@ version 0.6.2
 
  **What's new:**
 
-- Sound sub-module.
-- Bug in Importing ldpc_sound fixed.
-- 25% faster calculations 
+- Compatibility of scipy.sparse.csr objects (CSR format) and numpy arrays.
+- Row by row image decoding (More efficient than pixel coding) using large matrices.
+- 4 times faster coding. 
+- 5 to 10 times faster decoding.
+
 
 In the upcoming versions:
 -------------------------
 
-- Major Change: Use of large sparse matrices (spicy.sparse object).
-- Optimized Parity Check Matrices (library).
+- Use of large matrices (csr) in sound transmission sub-module.
+- Library of ready-to-use large matrices (csr).
 - Text Transmission functions.
 
 Contact:
