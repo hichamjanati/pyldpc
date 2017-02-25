@@ -68,7 +68,7 @@ def Decoding_BP(H,y,SNR,max_iter=1):
         for i in range(m):
             Ni=Bits[i]
             for j in Ni:
-                Nij = Ni.copy()
+                Nij = Ni[:]
 
                 if j in Nij: Nij.remove(j)
                 deltar[i,j] = prod(deltaq[i,Nij])
@@ -83,7 +83,7 @@ def Decoding_BP(H,y,SNR,max_iter=1):
         for j in range(n):
             Mj = Nodes[j]
             for i in Mj:
-                Mji = Mj.copy()
+                Mji = Mj[:]
                 if i in Mji: Mji.remove(i)
                     
                 q0[i,j] = p0[j]*prod(r0[Mji,j])
@@ -185,7 +185,7 @@ def Decoding_logBP(H,y,SNR,max_iter=1):
         for i in range(m):
             Ni = Bits[i]
             for j in Ni:
-                Nij = Ni.copy()
+                Nij = Ni[:]
 
                 if j in Nij: Nij.remove(j)
             
@@ -208,7 +208,7 @@ def Decoding_logBP(H,y,SNR,max_iter=1):
             Mj = Nodes[j]
             
             for i in Mj:
-                Mji = Mj.copy()
+                Mji = Mj[:]
                 if i in Mji: Mji.remove(i)
 
                 Lq[i,j] = Lc[j]+sum(Lr[Mji,j])
@@ -299,7 +299,7 @@ def Decoding_BP_ext(H,BitsNodesTuple,y,SNR,max_iter=1):
         for i in range(m):
             Ni=Bits[i]
             for j in Ni:
-                Nij = Ni.copy()
+                Nij = Ni[:]
 
                 if j in Nij: Nij.remove(j)
                 deltar[i,j] = prod(deltaq[i,Nij])
@@ -314,7 +314,7 @@ def Decoding_BP_ext(H,BitsNodesTuple,y,SNR,max_iter=1):
         for j in range(n):
             Mj = Nodes[j]
             for i in Mj:
-                Mji = Mj.copy()
+                Mji = Mj[:]
                 if i in Mji: Mji.remove(i)
                     
                 q0[i,j] = p0[j]*prod(r0[Mji,j])
@@ -418,7 +418,7 @@ def Decoding_logBP_ext(H,BitsNodesTuple,y,SNR,max_iter=1):
         for i in range(m):
             Ni = Bits[i]
             for j in Ni:
-                Nij = Ni.copy()
+                Nij = Ni[:]
 
                 if j in Nij: Nij.remove(j)
             
@@ -441,7 +441,7 @@ def Decoding_logBP_ext(H,BitsNodesTuple,y,SNR,max_iter=1):
             Mj = Nodes[j]
             
             for i in Mj:
-                Mji = Mj.copy()
+                Mji = Mj[:]
                 if i in Mji: Mji.remove(i)
 
                 Lq[i,j] = Lc[j]+sum(Lr[Mji,j])
