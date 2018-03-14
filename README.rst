@@ -51,7 +51,7 @@ Jupyter notebooks:
 
 - For LDPC construction details:
 
-1- `pyLDPC Construction(French) <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Presentation.ipynb?flush_cache=true>`_
+1- `pyLDPC Construction(French) <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Presentation.ipynb?flush_cache=true>`_
 
 2- `LDPC Images Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Images-Construction.ipynb?flush_cache=true>`_
 
