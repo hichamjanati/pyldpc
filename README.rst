@@ -19,7 +19,7 @@ In Brief:
 
 **Sound coding-decoding example:**
 
- `Sound Transmission <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/Example-Sound.ipynb>`_
+ `Sound Transmission <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/Example-Sound.ipynb>`_
 
 
 Installation
@@ -41,21 +41,21 @@ Jupyter notebooks:
 - Users' Guide:
 
 1- `LDPC Coding-Decoding Simulation
-<http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Tutorial-Basics.ipynb?flush_cache=true>`_
+<http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Basics.ipynb?flush_cache=true>`_
 
-2- `Images Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Tutorial-Images.ipynb?flush_cache=true>`_
+2- `Images Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Images.ipynb?flush_cache=true>`_
 
-3- `Sound Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Tutorial-Sound.ipynb?flush_cache=true>`_
+3- `Sound Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Sound.ipynb?flush_cache=true>`_
 
-4- `LDPC Matrices Construction Tutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Tutorial-Matrices.ipynb?flush_cache=true>`_
+4- `LDPC Matrices Construction Tutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Matrices.ipynb?flush_cache=true>`_
 
 - For LDPC construction details:
 
 1- `pyLDPC Construction(French) <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Presentation.ipynb?flush_cache=true>`_
 
-2- `LDPC Images Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Images-Construction.ipynb?flush_cache=true>`_
+2- `LDPC Images Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Images-Construction.ipynb?flush_cache=true>`_
 
-3- `LDPC Sound Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc/blob/master/pyLDPC-Sound-Construction.ipynb?flush_cache=true>`_
+3- `LDPC Sound Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Sound-Construction.ipynb?flush_cache=true>`_
 
 version 0.7.3
 -------------
