@@ -14,3 +14,6 @@ recursive-include examples *.py
 recursive-include examples *.txt
 recursive-include pyldpc *.DS_Store
 recursive-include pyldpc *.pyx
+
+# added by check_manifest.py
+recursive-include pyldpc *.py
