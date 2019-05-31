@@ -1,17 +1,17 @@
 import numpy as np
-from .imagesformat import (bin2gray, bin2rgb)
-from .codingfunctions import coding
-from .decodingfunctions import (decoding_bp_ext, decoding_logbp_ext,
-                                decodedmessage)
-from .ldpcalgebra import bitsandnodes
+from .utils_img import (bin2gray, bin2rgb)
+from .encoder import encode
+from .decoder import (decode_bp_ext, decode_logbp_ext,
+                      get_message)
+from .utils import bitsandnodes
 import scipy
 import warnings
 
 
-def imagecoding(tG, img_bin, snr):
+def encode_img(tG, img_bin, snr):
 
     """
-    CAUTION: SINCE V.0.7 Image coding and decoding functions
+    CAUTION: SINCE V.0.7 Image coding and `decode` functions
     TAKES TRANSPOSED CODING MATRIX tG.
     IF G IS LARGE, USE SCIPY.SPARSE.CSR_MATRIX FORMAT TO SPEED UP CALCULATIONS.
     Codes a binary image (Therefore must be a 3D-array).
@@ -60,7 +60,7 @@ def imagecoding(tG, img_bin, snr):
 
     for i in range(height):
         for j in range(width):
-            coded_byte_ij = coding(tG, img_bin[i, j, :], snr)
+            coded_byte_ij = encode(tG, img_bin[i, j, :], snr)
             coded_img[i, j, :] = coded_byte_ij
             systematic_part_ij = (coded_byte_ij[:k] < 0).astype(int)
 
@@ -74,15 +74,15 @@ def imagecoding(tG, img_bin, snr):
     return coded_img, noisy_img
 
 
-def imagedecoding(tG, H, img_coded, snr, max_iter=1, log=1):
+def decode_img(tG, H, img_coded, snr, max_iter=100, log=True):
     """
-    CAUTION: SINCE V.0.7 Image coding and decoding functions TAKES TRANSPOSED
+    CAUTION: SINCE V.0.7 Image coding and decode functions TAKES TRANSPOSED
     CODING MATRIX tG.
 
     IF G IS LARGE, USE SCIPY.SPARSE.CSR_MATRIX FORMAT (IN H AND G) TO SPEED UP
     CALCULATIONS.
 
-    Image decoding Function. Taked the 3-D binary coded image where each
+    Image decode Function. Taked the 3-D binary coded image where each
     element is a codeword n-bits array and decodes
     every one of them. Needs H to decode. A k bits decoded vector is the
     first k bits of each codeword, the decoded image can
@@ -91,7 +91,7 @@ def imagedecoding(tG, H, img_coded, snr, max_iter=1, log=1):
     Parameters:
 
     tG: Transposed coding matrix tG.
-    H: Parity-Check Matrix (decoding matrix).
+    H: Parity-Check Matrix (decode matrix).
     img_coded: binary coded image returned by the function ImageCoding.
     Must be shaped (heigth, width, n) where n is a
                 the length of a codeword (also the number of H's columns)
@@ -101,7 +101,7 @@ def imagedecoding(tG, H, img_coded, snr, max_iter=1, log=1):
 
     log: (optional, default = True), if True, Full-log version of BP
     algorithm is used.
-    max_iter: (optional, default =1), number of iterations of decoding.
+    max_iter: (optional, default =1), number of iterations of decode.
     increase if snr is < 5db.
     """
     n, k = tG.shape
@@ -110,27 +110,27 @@ def imagedecoding(tG, H, img_coded, snr, max_iter=1, log=1):
     img_decoded_bin = np.zeros(shape=(height, width, k), dtype=int)
 
     if log:
-        decodingfunction = decoding_logbp_ext
+        decodefunction = decode_logbp_ext
     else:
-        decodingfunction = decoding_bp_ext
+        decodefunction = decode_bp_ext
 
     systematic = 1
 
     if not (tG[:k, :] == np.identity(k)).all():
         warnings.warn("""In LDPC applications, using systematic coding matrix
-                         G is highly recommanded to speed up decoding.""")
+                         G is highly recommanded to speed up decode.""")
         systematic = 0
 
     bitsnodes = bitsandnodes(H)
     for i in range(height):
         for j in range(width):
 
-            decoded_vector = decodingfunction(H, bitsnodes, img_coded[i, j, :],
-                                              snr, max_iter)
+            decoded_vector = decodefunction(H, bitsnodes, img_coded[i, j, :],
+                                            snr, max_iter)
             if systematic:
                 decoded_byte = decoded_vector[:k]
             else:
-                decoded_byte = decodedmessage(tG, decoded_vector)
+                decoded_byte = get_message(tG, decoded_vector)
 
             img_decoded_bin[i, j, :] = decoded_byte
 
@@ -142,11 +142,11 @@ def imagedecoding(tG, H, img_coded, snr, max_iter=1, log=1):
     return img_decoded
 
 
-def imagecoding_rowbyrow(tG, img_bin, snr):
+def code_img_rowbyrow(tG, img_bin, snr):
 
     """
 
-    CAUTION: SINCE V.0.7 Image coding and decoding functions TAKE TRANSPOSED
+    CAUTION: SINCE V.0.7 Image coding and decode functions TAKE TRANSPOSED
     CODING MATRIX tG. USE
     SCIPY.SPARSE.CSR_MATRIX FORMAT (IN H AND G) TO SPEED UP CALCULATIONS.
     K MUST BE EQUAL TO THE NUMBER OF BITS IN ONE ROW
@@ -188,7 +188,7 @@ def imagecoding_rowbyrow(tG, img_bin, snr):
 
     if not type(tG) == scipy.sparse.csr_matrix:
         warnings.warn("""Using scipy.sparse.csr_matrix format is highly
-                    recommanded when computing row by row coding and decoding
+                    recommanded when computing row by row coding and decode
                     to speed up calculations.""")
 
     if not (tG[:k, :] == np.identity(k)).all():
@@ -205,7 +205,7 @@ def imagecoding_rowbyrow(tG, img_bin, snr):
     coded_img[height, 0:2] = width, depth
 
     for i in range(height):
-        coded_img[i, :] = coding(tG, img_bin_reshaped[i, :], snr)
+        coded_img[i, :] = encode(tG, img_bin_reshaped[i, :], snr)
 
     noisy_img = (coded_img[:height, :k] < 0).astype(int)
     noisy_img = noisy_img.reshape(height, width, depth)
@@ -216,15 +216,15 @@ def imagecoding_rowbyrow(tG, img_bin, snr):
         return coded_img, bin2rgb(noisy_img)
 
 
-def imagedecoding_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
+def decode_img_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
 
     """
-    CAUTION: SINCE V.0.7 Imagedecoding TAKES TRANSPOSED CODING MATRIX
+    CAUTION: SINCE V.0.7 Imagedecode TAKES TRANSPOSED CODING MATRIX
     tG INSTEAD OF G. USE SCIPY.SPARSE.CSR_MATRIX
     FORMAT (IN H AND G) TO SPEED UP CALCULATIONS.
 
     --------
-    Image decoding Function. Taked the 3-D binary coded image where each
+    Image decode Function. Taked the 3-D binary coded image where each
     element is a codeword n-bits array and decodes
     every one of them. Needs H to decode and tG to solve tG.tv = tx where
     x is the codeword element decoded by the function
@@ -234,7 +234,7 @@ def imagedecoding_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
     Parameters:
 
     tG: Transposed Coding Matrix ( SCIPY.SPARSE.CSR_MATRIX FORMAT RECOMMANDED )
-    H: Parity-Check Matrix (decoding matrix).( SCIPY.SPARSE.CSR_MATRIX
+    H: Parity-Check Matrix (decode matrix).( SCIPY.SPARSE.CSR_MATRIX
     FORMAT RECOMMANDED)
 
     img_coded: binary coded image returned by the function ImageCoding.
@@ -246,7 +246,7 @@ def imagedecoding_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
 
     log: (optional, default = True), if True, Full-log version of BP algorithm
     is used.
-    max_iter: (optional, default =1), number of iterations of decoding.
+    max_iter: (optional, default =1), number of iterations of decode.
     increase if snr is < 5db.
     """
 
@@ -271,20 +271,20 @@ def imagedecoding_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
         warnings.warn("""Used H is not a csr object. Using
                          scipy.sparse.csr_matrix format is highly
                          recommanded when computing row by row coding and
-                         decoding to speed up calculations.""")
+                         decode to speed up calculations.""")
 
     img_decoded_bin = np.zeros(shape=(height, k), dtype=int)
 
     if log:
-        decodingfunction = decoding_logbp_ext
+        decodefunction = decode_logbp_ext
     else:
-        decodingfunction = decoding_bp_ext
+        decodefunction = decode_bp_ext
 
     bitsnodes = bitsandnodes(H)
 
     for i in range(height):
-        decoded_vector = decodingfunction(H, bitsnodes, img_coded[i, :], snr,
-                                          max_iter)
+        decoded_vector = decodefunction(H, bitsnodes, img_coded[i, :], snr,
+                                        max_iter)
         img_decoded_bin[i, :] = decoded_vector[:k]
 
     if depth == 8:

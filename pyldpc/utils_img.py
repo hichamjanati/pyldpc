@@ -82,7 +82,7 @@ def gray2bin(img):
     return img_bin
 
 
-def Bin2Gray(img_bin):
+def bin2gray(img_bin):
 
     """ Puts a 8-bits binary Image to uint8
 
@@ -112,7 +112,7 @@ def Bin2Gray(img_bin):
     return img_grayscale
 
 
-def RGB2Bin(img):
+def rgb2bin(img):
     """ Puts an RGB Image on a binary form
 
     Parameters:
@@ -156,7 +156,7 @@ def RGB2Bin(img):
     return img_bin
 
 
-def Bin2RGB(img_bin):
+def bin2rgb(img_bin):
 
     """ Puts a 24-bits binary Image to 3xuint8 (RGB)
 

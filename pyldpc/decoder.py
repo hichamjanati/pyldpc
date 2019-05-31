@@ -1,8 +1,16 @@
 import numpy as np
-import ldpcalgebra as la
+from . import utils
 
 
-def decoding_bp(H, y, snr, maxiter=1):
+def decode(H, y, snr, maxiter=100, log=True):
+    """Decoder function."""
+    f = decode_bp
+    if log:
+        f = decode_logbp
+    return f(H, y, snr, maxiter=maxiter)
+
+
+def decode_bp(H, y, snr, maxiter=1):
 
     """ Decoding function using Belief Propagation algorithm.
         IMPORTANT: H can be scipy.sparse.csr_matrix object to speed up
@@ -34,9 +42,9 @@ def decoding_bp(H, y, snr, maxiter=1):
     sigma = 10 ** (-snr / 20)
 
     p0 = np.zeros(shape=n)
-    p0 = la.f1(y, sigma) / (la.f1(y, sigma) + la.fM1(y, sigma))
+    p0 = utils.f1(y, sigma) / (utils.f1(y, sigma) + utils.fm1(y, sigma))
     p1 = np.zeros(shape=n)
-    p1 = la.fM1(y, sigma) / (la.f1(y, sigma) + la.fM1(y, sigma))
+    p1 = utils.fm1(y, sigma) / (utils.f1(y, sigma) + utils.fm1(y, sigma))
 
     # step 0 : Initialization
     q0 = np.zeros(shape=(m, n))
@@ -50,7 +58,7 @@ def decoding_bp(H, y, snr, maxiter=1):
 
     count = 0
 
-    bits, nodes = la.bitsandnodes(H)
+    bits, nodes = utils.bitsandnodes(H)
 
     while(True):
         # step 1: horizontal
@@ -114,13 +122,13 @@ def decoding_bp(H, y, snr, maxiter=1):
 
         x = np.array(q1_post > q0_post).astype(int)
 
-        if la.incode(H, x) or count >= maxiter:
+        if utils.incode(H, x) or count >= maxiter:
             break
 
     return x
 
 
-def decoding_logbp(H, y, snr, maxiter=1):
+def decode_logbp(H, y, snr, maxiter=1):
 
     """ Decoding function using Belief Propagation algorithm
     (logarithmic version)
@@ -131,8 +139,8 @@ def decoding_logbp(H, y, snr, maxiter=1):
     Parameters:
 
     H: 2D-array (m, n) (OR scipy.sparse.csr_matrix object) Parity check matrix
-    y: n-vector recieved after transmission in the channel. (In general,
-    returned by `coding` Function)
+    y: n-vector recieved after transmission in the channel. (In particular,
+    returned by `encode` Function)
     Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of the AWGN
     used in coding.
 
@@ -161,7 +169,7 @@ def decoding_logbp(H, y, snr, maxiter=1):
 
     count = 0
 
-    bits, nodes = la.bitsandnodes(H)
+    bits, nodes = utils.bitsandnodes(H)
 
     while(True):
 
@@ -206,7 +214,7 @@ def decoding_logbp(H, y, snr, maxiter=1):
 
         x = np.array(L_posteriori <= 0).astype(int)
 
-        product = la.incode(H, x)
+        product = utils.incode(H, x)
 
         if product or count >= maxiter:
             break
@@ -214,7 +222,7 @@ def decoding_logbp(H, y, snr, maxiter=1):
     return x
 
 
-def decodingbp_ext(H, bits, nodes, y, snr, maxiter=1):
+def decode_bp_ext(H, bits, nodes, y, snr, maxiter=1):
 
     """ Decoding function using Belief Propagation algorithm.
 
@@ -246,9 +254,9 @@ def decodingbp_ext(H, bits, nodes, y, snr, maxiter=1):
     sigma = 10 ** (-snr / 20)
 
     p0 = np.zeros(shape=n)
-    p0 = la.f1(y, sigma) / (la.f1(y, sigma) + la.fm1(y, sigma))
+    p0 = utils.f1(y, sigma) / (utils.f1(y, sigma) + utils.fm1(y, sigma))
     p1 = np.zeros(shape=n)
-    p1 = la.fm1(y, sigma) / (la.f1(y, sigma) + la.fm1(y, sigma))
+    p1 = utils.fm1(y, sigma) / (utils.f1(y, sigma) + utils.fm1(y, sigma))
 
     # step 0 : Initialization
     q0 = np.zeros(shape=(m, n))
@@ -323,13 +331,13 @@ def decodingbp_ext(H, bits, nodes, y, snr, maxiter=1):
 
         x = np.array(q1_post > q0_post).astype(int)
 
-        if la.incode(H, x) or count >= maxiter:
+        if utils.incode(H, x) or count >= maxiter:
             break
 
     return x
 
 
-def decoding_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
+def decode_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
 
     """ Decoding function using Belief Propagation algorithm.
     in logdomain.
@@ -415,7 +423,7 @@ def decoding_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
 
         x = np.array(L_posteriori <= 0).astype(int)
 
-        product = la.incode(H, x)
+        product = utils.incode(H, x)
 
         if product or count >= maxiter:
             break
@@ -423,7 +431,7 @@ def decoding_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
     return x
 
 
-def decodedmessage(tG, x):
+def get_message(tG, x):
 
     """
     Let G be a coding matrix. tG its transposed matrix.
@@ -446,7 +454,7 @@ def decodedmessage(tG, x):
         raise ValueError("""Coding matrix G must have more columns than rows
                             to solve the linear system on v\': G\'v\' = x\'""")
 
-    rtG, rx = la.gausselimination(tG, x)
+    rtG, rx = utils.gausselimination(tG, x)
 
     rank = sum([a.any() for a in rtG])
     if rank != k:
@@ -457,7 +465,8 @@ def decodedmessage(tG, x):
 
     message[k - 1] = rx[k - 1]
     for i in reversed(range(k - 1)):
-        message[i] = rx[i] - la.binaryproduct(rtG[i, list(range(i+1, k))],
-                                              message[list(range(i+1, k))])
+        message[i] = rx[i]
+        message[i] -= utils.binaryproduct(rtG[i, list(range(i+1, k))],
+                                          message[list(range(i+1, k))])
 
     return abs(message)

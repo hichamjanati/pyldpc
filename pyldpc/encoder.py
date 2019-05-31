@@ -1,8 +1,8 @@
 import numpy as np
-import ldcpalgebra as la
+from . import utils
 
 
-def codingrandom(tG, snr, seed=None):
+def encode_random_message(tG, snr, seed=None):
     """
     IMPORTANT: tG can be transposed coding matrix scipy.sparse.csr_matrix
     object to speed up calculations. Randomly computes a k-bits message v,
@@ -40,7 +40,7 @@ def codingrandom(tG, snr, seed=None):
 
     v = rnd.randint(2, size=k)
 
-    d = la.binaryproduct(tG, v)
+    d = utils.binaryproduct(tG, v)
     x = pow(-1, d)
 
     sigma = 10 ** (-snr / 20)
@@ -49,10 +49,10 @@ def codingrandom(tG, snr, seed=None):
 
     y = x + e
 
-    return(v, y)
+    return v, y
 
 
-def coding(tG, v, snr, seed=None):
+def encode(tG, v, snr, seed=None):
     """
 
     IMPORTANT: if H is large, tG can be transposed coding matrix
@@ -85,7 +85,7 @@ def coding(tG, v, snr, seed=None):
         raise ValueError(""" Size of message v must be equal to number of Coding
                             atrix G's rows """)
     rnd = np.random.RandomState(seed)
-    d = la.binaryproduct(tG, v)
+    d = utils.binaryproduct(tG, v)
     x = (-1) ** d
 
     sigma = 10 ** (- snr / 20)

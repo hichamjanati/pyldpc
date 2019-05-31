@@ -129,7 +129,7 @@ def gaussjordan(X, change=0):
     return A
 
 
-def BinaryRank(X):
+def binaryrank(X):
     """ Computes rank of a binary Matrix using Gauss-Jordan algorithm"""
     A = np.copy(X)
     m, n = A.shape
@@ -141,14 +141,14 @@ def BinaryRank(X):
 
 def f1(y, sigma):
     """ Normal Density N(1,sigma) """
-    f = norm(y, loc=1, scale=sigma)
+    f = norm.pdf(y, loc=1, scale=sigma)
     return f
 
 
 def fm1(y, sigma):
     """ Normal Density N(-1,sigma) """
 
-    f = norm(y, loc=-1, scale=sigma)
+    f = norm.pdf(y, loc=-1, scale=sigma)
     return f
 
 

@@ -1,14 +1,14 @@
 import numpy as np
 import warnings
 
-from .soundformat import bin2audio
-from .codingfunctions import coding
-from .decodingfunctions import (decoding_bp_ext, decoding_logbp_ext,
-                                decodedmessage)
-from .ldpcalgebra import bitsandnodes
+from .utils_audio import bin2audio
+from .encoder import encode
+from .decoder import (decode_bp_ext, decode_logbp_ext,
+                      get_message)
+from .utils import bitsandnodes
 
 
-def soundcoding(tG, audio_bin, snr):
+def encode_audio(tG, audio_bin, snr):
     """
     Codes a binary audio array (Therefore must be a 2D-array shaped
     (length,17)). Each element (17 bits)
@@ -52,7 +52,7 @@ def soundcoding(tG, audio_bin, snr):
     noisy_audio = np.zeros(shape=(length, k), dtype=int)
 
     for j in range(length):
-        coded_number_j = coding(tG, audio_bin[j, :], snr)
+        coded_number_j = encode(tG, audio_bin[j, :], snr)
         coded_audio[j, :] = coded_number_j
         systematic_part_j = (coded_number_j[:k] < 0).astype(int)
         noisy_audio[j, :] = systematic_part_j
@@ -62,10 +62,10 @@ def soundcoding(tG, audio_bin, snr):
     return coded_audio, noisy_audio
 
 
-def Sounddecoding(tG, H, audio_coded, snr, max_iter=1, log=1):
+def decode_audio(tG, H, audio_coded, snr, max_iter=1, log=True):
 
     """
-    Sound decoding function. Taked the 2-D binary coded audio array where
+    Sound decode function. Taked the 2-D binary coded audio array where
     each element is a codeword n-bits array and decodes
     every one of them. Needs H to decode and G to solve v.G = x where x is
     the codeword element decoded by the function
@@ -75,7 +75,7 @@ def Sounddecoding(tG, H, audio_coded, snr, max_iter=1, log=1):
     Parameters:
 
     tG: Transposed coding Matrix
-    H: Parity-Check Matrix (decoding matrix).
+    H: Parity-Check Matrix (decode matrix).
     audio_coded: binary coded audio returned by the function Soundcoding.
     Must be shaped (length, n) where n is a
                 the length of a codeword (also the number of H's columns)
@@ -85,7 +85,7 @@ def Sounddecoding(tG, H, audio_coded, snr, max_iter=1, log=1):
 
     log: (optional, default = True), if True, Full-log version of bp
     algorithm is used.
-    max_iter: (optional, default =1), number of iterations of decoding.
+    max_iter: (optional, default =1), number of iterations of decode.
     increase if snr is < 5db.
 
     """
@@ -101,27 +101,27 @@ def Sounddecoding(tG, H, audio_coded, snr, max_iter=1, log=1):
     audio_decoded_bin = np.zeros(shape=(length, k), dtype=int)
 
     if log:
-        decodingfunction = decoding_logbp_ext
+        decodefunction = decode_logbp_ext
     else:
-        decodingfunction = decoding_bp_ext
+        decodefunction = decode_bp_ext
 
     systematic = 1
 
     if not (tG[:k, :] == np.identity(k)).all():
         warnings.warn("""In LDPC applications, using systematic coding matrix
-                         G is highly recommanded to speed up decoding.""")
+                         G is highly recommanded to speed up decode.""")
         systematic = 0
 
     bitsnodes = bitsandnodes(H)
 
     for j in range(length):
 
-        decoded_vector = decodingfunction(H, bitsnodes, audio_coded[j, :],
-                                          snr, max_iter)
+        decoded_vector = decodefunction(H, bitsnodes, audio_coded[j, :],
+                                        snr, max_iter)
         if systematic:
             decoded_number = decoded_vector[:k]
         else:
-            decoded_number = decodedmessage(tG, decoded_vector)
+            decoded_number = get_message(tG, decoded_vector)
 
         audio_decoded_bin[j, :] = decoded_number
 

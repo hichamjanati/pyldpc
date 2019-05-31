@@ -1,6 +1,6 @@
 import numpy as np
 
-from .ldpcalgebra import int2bitarray, bitarray2int
+from .utils import int2bitarray, bitarray2int
 
 
 def audio2bin(audio_array):
