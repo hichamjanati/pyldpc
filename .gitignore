@@ -1,9 +1,10 @@
 # OS
 .DS_Store
+pyldpc/.DS_Store
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
-pyldpc/tests/__pycache__/
+__pycache__
+pyldpc/tests/__pycache__
 *.py[cod]
 *$py.class
 
@@ -11,6 +12,7 @@ pyldpc/tests/__pycache__/
 *.so
 
 # Distribution / packaging
+.py
 .Python
 build/
 develop-eggs/
