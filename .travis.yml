@@ -1,0 +1,45 @@
+dist: trusty
+sudo: false
+
+language: python
+
+cache:
+  directories:
+  - $HOME/.cache/pip
+
+matrix:
+  include:
+    - env: PYTHON_VERSION="3.5" NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1"
+           SKLEARN_VERSION="0.19.1"
+    - env: PYTHON_VERSION="3.6" NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1"
+           SKLEARN_VERSION="0.19.1"
+    - env: PYTHON_VERSION="3.7" NUMPY_VERSION="*" SCIPY_VERSION="*"
+           SKLEARN_VERSION="*"
+
+before_install:
+  # install miniconda
+  - deactivate
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - MINICONDA_PATH=/home/travis/miniconda
+  - chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
+  - export PATH=$MINICONDA_PATH/bin:$PATH
+  - conda update --yes --quiet conda
+
+  # create the testing environment
+  - conda env create --file environment.yml python=${PYTHON_VERSION}
+  - source activate pyldpc-env
+  - conda install --yes --quiet pytest pytest-cov coverage
+  - pip install flake8 check-manifest
+  - pip install codecov
+
+install:
+  - python setup.py build_ext --inplace
+  - pip install -e .
+
+script:
+  - pytest -lv --cov-report term-missing pyldpc --cov=pyldpc --cov-config .coveragerc
+  - make
+  - flake8 --count pyldpc
+after_success:
+  - cp .coverage $TRAVIS_BUILD_DIR
+  - codecov --root $TRAVIS_BUILD_DIR || echo "codecov upload failed"

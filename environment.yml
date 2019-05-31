@@ -1,0 +1,6 @@
+name: pyldpc-env
+
+
+dependencies:
+    - numpy
+    - scipy
