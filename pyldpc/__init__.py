@@ -5,6 +5,7 @@ from .code import (parity_check_matrix, coding_matrix_systematic,
 from .utils import binaryproduct, incode, binaryrank
 from . import ldpc_images, ldpc_sound
 from . import utils
+from ._version import __version__
 
 
 __all__ = ['binaryproduct', 'incode', 'binaryrank', 'encode_random_message',
