@@ -1,3 +1,23 @@
+
+|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_
+
+.. |Travis| image:: https://travis-ci.com/hichamjanati/pyldpc.svg?branch=master
+.. _Travis: https://travis-ci.com/hichamjanati/pyldpc
+
+.. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/l7g6vywwwuyha49l?svg=true
+.. _AppVeyor: https://ci.appveyor.com/project/hichamjanati/pyldpc
+
+.. |Codecov| image:: https://codecov.io/gh/hichamjanati/pyldpc/branch/master/graph/badge.svg
+.. _Codecov: https://codecov.io/gh/hichamjanati/pyldpc
+
+.. |CircleCI| image:: https://circleci.com/gh/hichamjanati/pyldpc.svg?style=svg
+.. _CircleCI: https://circleci.com/gh/hichamjanati/pyldpc/tree/master
+
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/pyldpc/badge/?version=latest
+.. _ReadTheDocs: https://pyldpc.readthedocs.io/en/latest/
+
+
+
 =============================================
 **Simulation of LDPC Codes & Applications**
 =============================================
