@@ -61,12 +61,10 @@ Example
     >>> H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
     >>> k = G.shape[1]
     >>> v = np.random.randint(2, size=k)
-    >>> print("Message sent: ", v)
     >>> y = encode(G, v, snr)
-    >>> print("Message received: ", y)
     >>> d = decode(H, y, snr, maxiter=100, log=True)
     >>> x = get_message(G, d)
-    >>> print("Message after decoding: ", x)
+    >>> assert abs(x - v).sum() == 0
 
 Contact:
 --------
