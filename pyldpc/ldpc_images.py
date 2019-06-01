@@ -74,7 +74,7 @@ def encode_img(tG, img_bin, snr, seed=None):
     return coded_img, noisy_img
 
 
-def decode_img(tG, H, img_coded, snr, max_iter=100, log=True):
+def decode_img(tG, H, img_coded, snr, maxiter=100, log=True):
     """
     CAUTION: SINCE V.0.7 Image coding and decode functions TAKES TRANSPOSED
     CODING MATRIX tG.
@@ -101,7 +101,7 @@ def decode_img(tG, H, img_coded, snr, max_iter=100, log=True):
 
     log: (optional, default = True), if True, Full-log version of BP
     algorithm is used.
-    max_iter: (optional, default =1), number of iterations of decode.
+    maxiter: (optional, default =1), number of iterations of decode.
     increase if snr is < 5db.
     """
     n, k = tG.shape
@@ -114,19 +114,18 @@ def decode_img(tG, H, img_coded, snr, max_iter=100, log=True):
     else:
         decodefunction = decode_bp_ext
 
-    systematic = 1
+    systematic = True
 
     if not (tG[:k, :] == np.identity(k)).all():
         warnings.warn("""In LDPC applications, using systematic coding matrix
                          G is highly recommanded to speed up decode.""")
-        systematic = 0
+        systematic = False
 
-    bitsnodes = bitsandnodes(H)
+    bits, nodes = bitsandnodes(H)
     for i in range(height):
         for j in range(width):
-
-            decoded_vector = decodefunction(H, bitsnodes, img_coded[i, j, :],
-                                            snr, max_iter)
+            decoded_vector = decodefunction(H, bits, nodes, img_coded[i, j, :],
+                                            snr, maxiter)
             if systematic:
                 decoded_byte = decoded_vector[:k]
             else:
@@ -216,7 +215,7 @@ def code_img_rowbyrow(tG, img_bin, snr):
         return coded_img, bin2rgb(noisy_img)
 
 
-def decode_img_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
+def decode_img_rowbyrow(tG, H, img_coded, snr, maxiter=1, log=1):
 
     """
     CAUTION: SINCE V.0.7 Imagedecode TAKES TRANSPOSED CODING MATRIX
@@ -246,7 +245,7 @@ def decode_img_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
 
     log: (optional, default = True), if True, Full-log version of BP algorithm
     is used.
-    max_iter: (optional, default =1), number of iterations of decode.
+    maxiter: (optional, default =1), number of iterations of decode.
     increase if snr is < 5db.
     """
 
@@ -280,11 +279,11 @@ def decode_img_rowbyrow(tG, H, img_coded, snr, max_iter=1, log=1):
     else:
         decodefunction = decode_bp_ext
 
-    bitsnodes = bitsandnodes(H)
+    bits, nodes = bitsandnodes(H)
 
     for i in range(height):
-        decoded_vector = decodefunction(H, bitsnodes, img_coded[i, :], snr,
-                                        max_iter)
+        decoded_vector = decodefunction(H, bits, nodes, img_coded[i, :], snr,
+                                        maxiter)
         img_decoded_bin[i, :] = decoded_vector[:k]
 
     if depth == 8:

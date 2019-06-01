@@ -62,7 +62,7 @@ def encode_audio(tG, audio_bin, snr):
     return coded_audio, noisy_audio
 
 
-def decode_audio(tG, H, audio_coded, snr, max_iter=1, log=True):
+def decode_audio(tG, H, audio_coded, snr, maxiter=1, log=True):
 
     """
     Sound decode function. Taked the 2-D binary coded audio array where
@@ -85,7 +85,7 @@ def decode_audio(tG, H, audio_coded, snr, max_iter=1, log=True):
 
     log: (optional, default = True), if True, Full-log version of bp
     algorithm is used.
-    max_iter: (optional, default =1), number of iterations of decode.
+    maxiter: (optional, default =1), number of iterations of decode.
     increase if snr is < 5db.
 
     """
@@ -112,12 +112,12 @@ def decode_audio(tG, H, audio_coded, snr, max_iter=1, log=True):
                          G is highly recommanded to speed up decode.""")
         systematic = 0
 
-    bitsnodes = bitsandnodes(H)
+    bits, nodes = bitsandnodes(H)
 
     for j in range(length):
 
-        decoded_vector = decodefunction(H, bitsnodes, audio_coded[j, :],
-                                        snr, max_iter)
+        decoded_vector = decodefunction(H, bits, nodes, audio_coded[j, :],
+                                        snr, maxiter)
         if systematic:
             decoded_number = decoded_vector[:k]
         else:
