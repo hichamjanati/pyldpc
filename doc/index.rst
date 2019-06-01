@@ -37,6 +37,7 @@ Example
 
 .. code:: python
 
+    >>> import numpy as np
     >>> from pyldpc import make_ldpc, encode, decode, get_message
     >>> n = 15
     >>> d_v = 4
@@ -44,11 +45,11 @@ Example
     >>> snr = 10
     >>> H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
     >>> k = G.shape[1]
-    >>> v = np.random.randint(1, size=k)
+    >>> v = np.random.randint(2, size=k)
     >>> print("Message sent: ", v)
     >>> y = encode(G, v, snr)
     >>> print("Message received: ", y)
-    >>> d = decode(H, y, snr, maxiter=100, log=log)
+    >>> d = decode(H, y, snr, maxiter=100, log=True)
     >>> x = get_message(G, d)
     >>> print("Message after decoding: ", x)
 
