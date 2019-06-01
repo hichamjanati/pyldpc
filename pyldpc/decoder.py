@@ -10,7 +10,7 @@ def decode(H, y, snr, maxiter=100, log=True):
     return f(H, y, snr, maxiter=maxiter)
 
 
-def decode_bp(H, y, snr, maxiter=1):
+def decode_bp(H, y, snr, maxiter=100):
 
     """ Decoding function using Belief Propagation algorithm.
         IMPORTANT: H can be scipy.sparse.csr_matrix object to speed up
@@ -436,3 +436,5 @@ def get_message(tG, x):
                                           message[list(range(i+1, k))])
 
     return abs(message)
+
+# @njit(int64[:](int64[:, :], float64[:], float64, int64), cache=True)

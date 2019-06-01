@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from numba import njit, float64, int64
 import scipy
 from scipy.stats import norm
 pi = math.pi
@@ -160,7 +161,7 @@ def bits2i(H, i):
     """
     if type(H) != scipy.sparse.csr_matrix:
         m, n = H.shape
-        return ([a for a in range(n) if H[i, a]])
+        return list(np.where(H[i])[0])
 
     indj = H.indptr
     indi = H.indices
@@ -168,7 +169,7 @@ def bits2i(H, i):
     return [indi[a] for a in range(indj[i], indj[i+1])]
 
 
-def nodes2j(tH, j):
+def nodes2j(H, j):
 
     """
     Computes list of elements of M(j):
@@ -176,19 +177,15 @@ def nodes2j(tH, j):
 
     """
 
-    return bits2i(tH, j)
+    return bits2i(H.T, j)
 
 
 def bitsandnodes(H):
 
     m, n = H.shape
-    if type(H) == scipy.sparse.csr_matrix:
-        tH = scipy.sparse.csr_matrix(np.transpose(H.toarray()))
-    else:
-        tH = np.transpose(H)
 
     bits = [bits2i(H, i) for i in range(m)]
-    nodes = [nodes2j(tH, j)for j in range(n)]
+    nodes = [nodes2j(H, j)for j in range(n)]
 
     return bits, nodes
 
