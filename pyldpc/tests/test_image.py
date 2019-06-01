@@ -1,7 +1,8 @@
 import numpy as np
+import scipy
 
-from pyldpc import (make_ldpc, binaryproduct, ldpc_images, get_message)
-from pyldpc.utils_img import gray2bin, bin2gray, rgb2bin, bin2rgb
+from pyldpc import (make_ldpc, binaryproduct, ldpc_images)
+from pyldpc.utils_img import gray2bin, rgb2bin
 import pytest
 from itertools import product
 
@@ -19,7 +20,6 @@ def test_image_gray(systematic, log, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    print(n, k)
     snr = 100
 
     img = rnd.randint(0, 255, size=(3, 3))
@@ -27,6 +27,61 @@ def test_image_gray(systematic, log, sparse):
     coded, noisy = ldpc_images.encode_img(G, img_bin, snr, seed)
 
     x = ldpc_images.decode_img(G, H, coded, snr, maxiter=100, log=log)
+
+    assert abs(img - x).sum() == 0
+
+# sparse = True
+# log = True
+# systematic = True
+
+
+@pytest.mark.parametrize("systematic, log, sparse",
+                         product([False, True], [True], [False, True]))
+def test_image_rgb(systematic, log, sparse):
+
+    n = 26
+    d_v = 1
+    d_c = 2
+    seed = 0
+    rnd = np.random.RandomState(seed)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    assert not binaryproduct(H, G).any()
+
+    n, k = G.shape
+    snr = 100
+
+    img = rnd.randint(0, 255, size=(3, 3, 3))
+    img_bin = rgb2bin(img)
+    coded, noisy = ldpc_images.encode_img(G, img_bin, snr, seed)
+
+    x = ldpc_images.decode_img(G, H, coded, snr, maxiter=100, log=log)
+
+    assert abs(img - x).sum() == 0
+
+
+@pytest.mark.parametrize("systematic, log, sparse",
+                         product([True], [True, False], [False, True]))
+def test_image_row(systematic, log, sparse):
+    n = 74
+    d_v = 1
+    d_c = 2
+    seed = 0
+    rnd = np.random.RandomState(seed)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    assert not binaryproduct(H, G).any()
+    if sparse:
+        G = scipy.sparse.csr_matrix(G)
+        H = scipy.sparse.csr_matrix(H)
+
+    n, k = G.shape
+    print(k)
+    snr = 100
+
+    img = rnd.randint(0, 255, size=(3, 3, 3))
+    img_bin = rgb2bin(img)
+    coded, noisy = ldpc_images.encode_img_rowbyrow(G, img_bin, snr, seed)
+
+    x = ldpc_images.decode_img_rowbyrow(G, H, coded, snr, maxiter=100, log=log)
 
     assert abs(img - x).sum() == 0
 

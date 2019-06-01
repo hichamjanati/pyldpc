@@ -141,7 +141,7 @@ def decode_img(tG, H, img_coded, snr, maxiter=100, log=True):
     return img_decoded
 
 
-def code_img_rowbyrow(tG, img_bin, snr):
+def encode_img_rowbyrow(tG, img_bin, snr, seed=None):
 
     """
 
@@ -204,7 +204,7 @@ def code_img_rowbyrow(tG, img_bin, snr):
     coded_img[height, 0:2] = width, depth
 
     for i in range(height):
-        coded_img[i, :] = encode(tG, img_bin_reshaped[i, :], snr)
+        coded_img[i, :] = encode(tG, img_bin_reshaped[i, :], snr, seed)
 
     noisy_img = (coded_img[:height, :k] < 0).astype(int)
     noisy_img = noisy_img.reshape(height, width, depth)
@@ -250,7 +250,7 @@ def decode_img_rowbyrow(tG, H, img_coded, snr, maxiter=1, log=1):
     """
 
     n, k = tG.shape
-    width, depth = img_coded[-1, 0:2]
+    width, depth = img_coded.astype(int)[-1, 0:2]
     img_coded = img_coded[:-1, :]
     height, N = img_coded.shape
 
