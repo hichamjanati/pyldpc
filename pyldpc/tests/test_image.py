@@ -1,5 +1,4 @@
 import numpy as np
-import scipy
 
 from pyldpc import (make_ldpc, binaryproduct, ldpc_images)
 from pyldpc.utils_img import gray2bin, rgb2bin
@@ -16,7 +15,8 @@ def test_image_gray(systematic, log, sparse):
     d_c = 2
     seed = 0
     rnd = np.random.RandomState(seed)
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
+                     sparse=sparse)
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
@@ -28,7 +28,7 @@ def test_image_gray(systematic, log, sparse):
 
     x = ldpc_images.decode_img(G, H, coded, snr, maxiter=100, log=log)
 
-    assert abs(img - x).sum() == 0
+    assert ldpc_images.ber_img(img_bin, gray2bin(x)) == 0
 
 # sparse = True
 # log = True
@@ -44,7 +44,8 @@ def test_image_rgb(systematic, log, sparse):
     d_c = 2
     seed = 0
     rnd = np.random.RandomState(seed)
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
+                     sparse=sparse)
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
@@ -56,7 +57,7 @@ def test_image_rgb(systematic, log, sparse):
 
     x = ldpc_images.decode_img(G, H, coded, snr, maxiter=100, log=log)
 
-    assert abs(img - x).sum() == 0
+    assert ldpc_images.ber_img(img_bin, rgb2bin(x)) == 0
 
 
 @pytest.mark.parametrize("systematic, log, sparse",
@@ -67,14 +68,11 @@ def test_image_row(systematic, log, sparse):
     d_c = 2
     seed = 0
     rnd = np.random.RandomState(seed)
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
+                     sparse=sparse)
     assert not binaryproduct(H, G).any()
-    if sparse:
-        G = scipy.sparse.csr_matrix(G)
-        H = scipy.sparse.csr_matrix(H)
 
     n, k = G.shape
-    print(k)
     snr = 100
 
     img = rnd.randint(0, 255, size=(3, 3, 3))
@@ -83,7 +81,7 @@ def test_image_row(systematic, log, sparse):
 
     x = ldpc_images.decode_img_rowbyrow(G, H, coded, snr, maxiter=100, log=log)
 
-    assert abs(img - x).sum() == 0
+    assert ldpc_images.ber_img(img_bin, rgb2bin(x)) == 0
 
 
 # @pytest.mark.parametrize("systematic, log, sparse",

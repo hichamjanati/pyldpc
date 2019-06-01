@@ -260,7 +260,7 @@ def coding_matrix_systematic(X, sparse=True):
     return Hp, GS.T
 
 
-def make_ldpc(n, d_v, d_c, seed=None, systematic=False):
+def make_ldpc(n, d_v, d_c, seed=None, systematic=False, sparse=True):
     """Creates an LDPC coding and decoding matrices H and G.
     Parameters:
     -----------
@@ -279,7 +279,7 @@ def make_ldpc(n, d_v, d_c, seed=None, systematic=False):
 
     H = parity_check_matrix(n, d_v, d_c, seed=seed)
     if systematic:
-        H, G = coding_matrix_systematic(H, sparse=True)
+        H, G = coding_matrix_systematic(H, sparse=sparse)
     else:
-        H, G = coding_matrix(H, sparse=True)
+        H, G = coding_matrix(H, sparse=sparse)
     return H, G

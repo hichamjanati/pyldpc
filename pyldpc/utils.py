@@ -203,7 +203,7 @@ def incode(H, x):
     return (binaryproduct(H, x) == 0).all()
 
 
-def gausselimination(X, b):
+def gausselimination(A, b):
 
     """ Applies Gauss Elimination Algorithm to X in order to solve a
     linear system X.X = B. X is transformed to row echelon form:
@@ -234,9 +234,11 @@ def gausselimination(X, b):
     Modified arguments X, B as described above.
 
          """
-
-    A = np.copy(X)
-    b = np.copy(b)
+    if type(A) == scipy.sparse.csr_matrix:
+        A = A.toarray().copy()
+    else:
+        A = A.copy()
+    b = b.copy()
     n, k = A.shape
 
     if b.size != n:
@@ -250,11 +252,11 @@ def gausselimination(X, b):
         else:
             continue
         if pivot != j:
-            aux = np.copy(A[j, :])
+            aux = (A[j, :]).copy()
             A[j, :] = A[pivot, :]
             A[pivot, :] = aux
 
-            aux = np.copy(b[j])
+            aux = b[j].copy()
             b[j] = b[pivot]
             b[pivot] = aux
 

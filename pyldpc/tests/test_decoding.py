@@ -14,7 +14,8 @@ def test_decoding_random(systematic, log, sparse):
     d_c = 5
     seed = 0
 
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
+                     sparse=sparse)
     assert not binaryproduct(H, G).any()
     n, k = G.shape
     snr = 100
@@ -28,14 +29,15 @@ def test_decoding_random(systematic, log, sparse):
 
 
 @pytest.mark.parametrize("systematic, log, sparse",
-                         product([False, True], [True], [False, True]))
+                         product([False, True], [True, False], [False, True]))
 def test_decoding(systematic, log, sparse):
     n = 15
     d_v = 4
     d_c = 5
     seed = 0
 
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
+                     sparse=sparse)
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape

@@ -294,7 +294,7 @@ def decode_img_rowbyrow(tG, H, img_coded, snr, maxiter=1, log=1):
     return img_decoded
 
 
-def compute_ber(original_img_bin, decoded_img_bin):
+def ber_img(original_img_bin, decoded_img_bin):
     """
 
     Computes Bit-Error-Rate (BER) by comparing 2 binary images.
@@ -306,7 +306,7 @@ def compute_ber(original_img_bin, decoded_img_bin):
 
     height, width, k = original_img_bin.shape
 
-    errors_bits = sum(abs(original_img_bin-decoded_img_bin))
+    errors_bits = abs(original_img_bin - decoded_img_bin).sum()
     errors_bits = errors_bits.flatten()
     total_bits = np.prod(original_img_bin.shape)
 

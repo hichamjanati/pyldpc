@@ -105,12 +105,12 @@ def decode_audio(tG, H, audio_coded, snr, maxiter=1, log=True):
     else:
         decodefunction = decode_bp_ext
 
-    systematic = 1
+    systematic = True
 
     if not (tG[:k, :] == np.identity(k)).all():
         warnings.warn("""In LDPC applications, using systematic coding matrix
                          G is highly recommanded to speed up decode.""")
-        systematic = 0
+        systematic = False
 
     bits, nodes = bitsandnodes(H)
 
@@ -143,8 +143,8 @@ def ber_audio(original_audio_bin, decoded_audio_bin):
 
     total_bits = np.prod(original_audio_bin.shape)
 
-    errors_bits = sum(abs(original_audio_bin-decoded_audio_bin).flatten())
+    errors_bits = abs(original_audio_bin-decoded_audio_bin).flatten().sum()
 
-    ber = errors_bits/total_bits
+    ber = errors_bits / total_bits
 
     return(ber)
