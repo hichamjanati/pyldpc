@@ -8,7 +8,7 @@ import scipy
 import warnings
 
 
-def encode_img(tG, img_bin, snr):
+def encode_img(tG, img_bin, snr, seed=None):
 
     """
     CAUTION: SINCE V.0.7 Image coding and `decode` functions
@@ -60,7 +60,7 @@ def encode_img(tG, img_bin, snr):
 
     for i in range(height):
         for j in range(width):
-            coded_byte_ij = encode(tG, img_bin[i, j, :], snr)
+            coded_byte_ij = encode(tG, img_bin[i, j, :], snr, seed)
             coded_img[i, j, :] = coded_byte_ij
             systematic_part_ij = (coded_byte_ij[:k] < 0).astype(int)
 

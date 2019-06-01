@@ -1,13 +1,18 @@
 # import numpy as np
 #
-# from pyldpc import (make_ldpc, binaryproduct, ldpc_images)
+# from pyldpc import (make_ldpc, binaryproduct, ldpc_images, get_message)
+# from pyldpc.utils_img import gray2bin, bin2gray, rgb2bin, bin2rgb
 # import pytest
 # from itertools import product
 #
 #
-# @pytest.mark.parametrize("systematic, log, sparse",
-#                          product([False, True], [True], [False, True]))
-# def test_image_gray(systematic, log, sparse):
+# # @pytest.mark.parametrize("systematic, log, sparse",
+# #                          product([False, True], [True], [False, True]))
+# # def test_image_gray(systematic, log, sparse):
+# sparse = True
+# systematic = False
+# log = False
+# if 1:
 #     n = 60
 #     d_v = 4
 #     d_c = 5
@@ -20,13 +25,14 @@
 #     snr = 100
 #
 #     img = rnd.randint(255, size=(3, 3))
+#     img_bin = gray2bin(img)
+#     y = ldpc_images.encode_img(G, img_bin, snr, seed)
 #
-#     y = encode(G, v, snr, seed)
-#
-#     d = decode(H, y, snr, maxiter=10, log=log)
+#     d = ldpc_images.decode_img(H, y, snr, maxiter=100, log=log)
 #     x = get_message(G, d)
+#     x_img = bin2gray(x)
 #
-#     assert abs(v - x).sum() == 0
+#     assert abs(img - x_img).sum() == 0
 #
 #
 # # @pytest.mark.parametrize("systematic, log, sparse",
