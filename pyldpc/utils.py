@@ -241,10 +241,6 @@ def gausselimination(A, b):
     b = b.copy()
     n, k = A.shape
 
-    if b.size != n:
-        raise ValueError("""Size of B must match number of rows of X
-                            to solve X.X = b""")
-
     for j in range(min(k, n)):
         listedepivots = [i for i in range(j, n) if A[i, j]]
         if len(listedepivots):

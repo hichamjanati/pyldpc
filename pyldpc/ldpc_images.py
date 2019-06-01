@@ -194,7 +194,7 @@ def encode_img_rowbyrow(tG, img_bin, snr, seed=None):
         raise ValueError("""G must be Systematic. Solving tG.tv = tx for images
                             has a O(n^3) complexity.""")
 
-    if width*depth != k:
+    if width * depth != k:
         raise ValueError("""If the image's shape is (X,Y,Z) k must be equal
                          to 8*Y (if gray ) or 24*Y (if rgb)""")
 

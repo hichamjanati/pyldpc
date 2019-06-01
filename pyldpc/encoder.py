@@ -81,9 +81,6 @@ def encode(tG, v, snr, seed=None):
     """
     n, k = tG.shape
 
-    if len(v) != k:
-        raise ValueError(""" Size of message v must be equal to number of Coding
-                            atrix G's rows """)
     rnd = np.random.RandomState(seed)
     d = utils.binaryproduct(tG, v)
     x = (-1) ** d

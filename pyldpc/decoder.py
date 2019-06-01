@@ -32,13 +32,6 @@ def decode_bp(H, y, snr, maxiter=1):
      """
 
     m, n = H.shape
-    if not len(y) == n:
-        raise ValueError("""Size of y must be equal to number of
-                            parity matrix\'s columns n""")
-
-    if m >= n:
-        raise ValueError('H must be of shape (m, n) with m < n')
-
     sigma = 10 ** (-snr / 20)
 
     p0 = np.zeros(shape=n)
@@ -150,12 +143,6 @@ def decode_logbp(H, y, snr, maxiter=1):
      """
 
     m, n = H.shape
-    if not len(y) == n:
-        raise ValueError("""Size of y must be equal to number of
-                            parity matrix\'s columns n""")
-
-    if m >= n:
-        raise ValueError('H must be of shape (m, n) with m < n')
 
     var = 10 ** (-snr / 10)
 
@@ -244,12 +231,6 @@ def decode_bp_ext(H, bits, nodes, y, snr, maxiter=1):
      """
 
     m, n = H.shape
-    if not len(y) == n:
-        raise ValueError("""Size of y must be equal to number of
-                            parity matrix\'s columns n""")
-
-    if m >= n:
-        raise ValueError('H must be of shape (m, n) with m < n')
 
     sigma = 10 ** (-snr / 20)
 
@@ -360,12 +341,6 @@ def decode_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
      """
 
     m, n = H.shape
-    if not len(y) == n:
-        raise ValueError("""Size of y must be equal to number of
-                            parity matrix\'s columns n""")
-
-    if m >= n:
-        raise ValueError('H must be of shape (m, n) with m < n')
 
     var = 10 ** (-snr / 10)
 
@@ -450,16 +425,7 @@ def get_message(tG, x):
     """
     n, k = tG.shape
 
-    if n < k:
-        raise ValueError("""Coding matrix G must have more columns than rows
-                            to solve the linear system on v\': G\'v\' = x\'""")
-
     rtG, rx = utils.gausselimination(tG, x)
-
-    rank = sum([a.any() for a in rtG])
-    if rank != k:
-        raise ValueError("""Coding matrix G must have full rank = k to
-                            solve G\'v\' = x\'""")
 
     message = np.zeros(k).astype(int)
 

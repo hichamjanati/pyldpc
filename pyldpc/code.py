@@ -37,10 +37,12 @@ def parity_check_matrix(n, d_v, d_c, seed=None):
     """
     rnd = np.random.RandomState(seed)
     if n % d_c:
-        raise ValueError('d_c must divide n. Help(RegularH) for more info.')
+        raise ValueError("""d_c must divide n. help(coding_matrix)
+                            for more info.""")
 
     if d_c <= d_v:
-        raise ValueError("""d_c must be greater than d_v. Help(RegularH) for
+        raise ValueError("""d_c must be greater than d_v.
+                            help(coding_matrix) for
                             more info.""")
 
     m = (n * d_v) // d_c
@@ -134,16 +136,6 @@ def coding_matrix(X, sparse=True):
 
     H = np.copy(X)
     m, n = H.shape
-
-    if m > n:
-        raise ValueError("""X must have more rows than columns
-                        (a parity check matrix)""")
-
-    if n > 500 and sparse:
-        sparse = True
-
-    else:
-        sparse = False
 
     # DOUBLE GAUSS-JORDAN:
 
