@@ -8,7 +8,7 @@ from .decoder import (decode_bp_ext, decode_logbp_ext,
 from .utils import bitsandnodes
 
 
-def encode_audio(tG, audio_bin, snr):
+def encode_audio(tG, audio_bin, snr, seed=None):
     """
     Codes a binary audio array (Therefore must be a 2D-array shaped
     (length,17)). Each element (17 bits)
@@ -52,7 +52,7 @@ def encode_audio(tG, audio_bin, snr):
     noisy_audio = np.zeros(shape=(length, k), dtype=int)
 
     for j in range(length):
-        coded_number_j = encode(tG, audio_bin[j, :], snr)
+        coded_number_j = encode(tG, audio_bin[j, :], snr, seed)
         coded_audio[j, :] = coded_number_j
         systematic_part_j = (coded_number_j[:k] < 0).astype(int)
         noisy_audio[j, :] = systematic_part_j
