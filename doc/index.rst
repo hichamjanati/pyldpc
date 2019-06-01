@@ -42,8 +42,7 @@ Example
     >>> d_v = 4
     >>> d_c = 5
     >>> snr = 10
-    >>> H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=True,
-                         sparse=True)
+    >>> H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=True, sparse=True)
     >>> k = G.shape[1]
     >>> v = np.random.randint(1, size=k)
     >>> print("Message sent: ", v)
