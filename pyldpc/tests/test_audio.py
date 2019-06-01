@@ -27,6 +27,9 @@ def test_audio(systematic, log, sparse):
     n, k = G.shape
     print(k)
     snr = 100
+    if sparse:
+        G = scipy.sparse.csr_matrix(G)
+        H = scipy.sparse.csr_matrix(H)
 
     audio = rnd.randint(0, 255, size=5)
     audio_bin = audio2bin(audio)
