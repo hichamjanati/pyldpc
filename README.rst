@@ -23,18 +23,16 @@
 =============================================
 *version 0.7.5*
 
-In Brief:
----------
-- Generates coding and decoding matrices.
-- Probabilistic decoding: Belief Propagation algorithm.
-- Images transmission simulation (channel model: AGWN).
-- Sound transmission simulation (channel model :AGWN).
+Description:
+------------
+- Simulation of regular LDPC codes.
+- Probabilistic decoding: Belief Propagation algorithm for gaussian white noise transmission.
+- Simulation application to image and audio data.
 
 **Image coding-decoding example:**
 
-.. image:: https://media.giphy.com/media/l4KicsAauqIWjeFR6/giphy.gif
+.. .. image:: https://media.giphy.com/media/l4KicsAauqIWjeFR6/giphy.gif
 .. image:: https://media.giphy.com/media/l0COHC49bK6g7yIPm/giphy.gif
-
 
 
 **Sound coding-decoding example:**
@@ -49,63 +47,27 @@ From pip::
 
     $ pip install --upgrade pyldpc
 
+Example
+-------
 
-Tutorials:
-----------
+.. code:: python
 
-Jupyter notebooks:
-
-
-*Many changes in tutorials in v.0.7.3*
-
-- Users' Guide:
-
-1- `LDPC Coding-Decoding Simulation
-<http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Basics.ipynb?flush_cache=true>`_
-
-2- `Images Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Images.ipynb?flush_cache=true>`_
-
-3- `Sound Coding-DecodingTutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Sound.ipynb?flush_cache=true>`_
-
-4- `LDPC Matrices Construction Tutorial <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Tutorial-Matrices.ipynb?flush_cache=true>`_
-
-- For LDPC construction details:
-
-1- `pyLDPC Construction(French) <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Presentation.ipynb?flush_cache=true>`_
-
-2- `LDPC Images Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Images-Construction.ipynb?flush_cache=true>`_
-
-3- `LDPC Sound Functions Construction <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/pyLDPC-Sound-Construction.ipynb?flush_cache=true>`_
-
-version 0.7.3
--------------
-
- **Contains:**
-
-1. Coding and decoding matrices Generators:
-    - Regular parity-check matrix using Callager's method.
-    - Coding Matrix G both non-systematic and systematic.
-2. Coding function adding Additive White Gaussian Noise.
-3. Decoding functions using Probabilistic Decoding (Belief propagation algorithm):
-    - Default and full-log BP algorithm.
-4. Images transmission sub-module:
-    - Coding and Decoding Grayscale and RGB Images.
-5. Sound transmission sub-module:
-    - Coding and Decoding audio files.
-6. Compatibility numpy ndarrays <=> scipy sparse csr format.
-
-
- **What's new:**
-
-- Python 2 compatibility
-
-
-In the upcoming versions:
--------------------------
-
-- Library of ready-to-use large matrices (csr).
-- Text Transmission functions.
+    >>> from pyldpc import make_ldpc, encode, decode, get_message
+    >>> n = 15
+    >>> d_v = 4
+    >>> d_c = 5
+    >>> snr = 10
+    >>> H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=True,
+                         sparse=True)
+    >>> k = G.shape[1]
+    >>> v = np.random.randint(1, size=k)
+    >>> print("Message sent: ", v)
+    >>> y = encode(G, v, snr)
+    >>> print("Message received: ", y)
+    >>> d = decode(H, y, snr, maxiter=100, log=log)
+    >>> x = get_message(G, d)
+    >>> print("Message after decoding: ", x)
 
 Contact:
 --------
-Please contact hicham.janati@ensae.fr for any bug encountered / any further information.
+Please contact hicham.janati@inria.fr for any bug encountered / any further information.
