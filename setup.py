@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-import numpy
+import numpy as np
 
 
 def readme():
@@ -7,7 +7,7 @@ def readme():
         return f.read()
 
 
-INSTALL_REQUIRES = ['numpy', 'scipy']
+INSTALL_REQUIRES = ['scipy']
 
 EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov'],
                   'docs': ['sphinx', 'sphinx-gallery',
@@ -16,9 +16,9 @@ EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov'],
                   }
 
 if __name__ == "__main__":
-    setup(name="pyldpc",
+    setup(name="pyldpc-dev01",
           packages=find_packages(),
-          include_dirs=[numpy.get_include()],
+          include_dirs=[np.get_include()],
           install_requires=INSTALL_REQUIRES,
           extras_require=EXTRAS_REQUIRE,
           version='0.7.6',
