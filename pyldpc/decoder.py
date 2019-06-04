@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from . import utils
 
 
@@ -118,6 +119,9 @@ def decode_bp(H, y, snr, maxiter=100):
         if utils.incode(H, x) or count >= maxiter:
             break
 
+    if count == maxiter:
+        warnings.warn("""Decoding stopped before convergence. You may want
+                       to increase maxiter""")
     return x
 
 
@@ -205,7 +209,9 @@ def decode_logbp(H, y, snr, maxiter=1):
 
         if product or count >= maxiter:
             break
-
+    if count == maxiter:
+        warnings.warn("""Decoding stopped before convergence. You may want
+                       to increase maxiter""")
     return x
 
 
@@ -314,7 +320,9 @@ def decode_bp_ext(H, bits, nodes, y, snr, maxiter=1):
 
         if utils.incode(H, x) or count >= maxiter:
             break
-
+    if count == maxiter:
+        warnings.warn("""Decoding stopped before convergence. You may want
+                       to increase maxiter""")
     return x
 
 
@@ -403,6 +411,9 @@ def decode_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
         if product or count >= maxiter:
             break
 
+    if count == maxiter:
+        warnings.warn("""Decoding stopped before convergence. You may want
+                       to increase maxiter""")
     return x
 
 
