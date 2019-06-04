@@ -20,12 +20,11 @@ if __name__ == "__main__":
           include_dirs=[numpy.get_include()],
           install_requires=INSTALL_REQUIRES,
           extras_require=EXTRAS_REQUIRE,
-          version='0.7.5',
+          version='0.7.6',
           description='Simulation of Low Density Parity Check Codes ldpc',
           long_description=readme(),
           classifiers=[
-          'Programming Language :: Python :: 2.7',
-          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'Intended Audience :: Education',
@@ -36,6 +35,6 @@ if __name__ == "__main__":
           keywords='codes ldpc error detection decoding coding pyldpc',
           url='https://github.com/hichamjanati/pyldpc',
           author='Hicham Janati',
-          author_email='hicham.janati@inria.fr',
+          author_email='hicham.janati100@gmail.com',
           license='MIT',
           )
