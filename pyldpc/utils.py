@@ -1,6 +1,5 @@
 import math
 import numpy as np
-from numba import njit, float64, int64
 import scipy
 from scipy.stats import norm
 pi = math.pi
