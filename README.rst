@@ -45,13 +45,17 @@ Installation
 
 If you already have a working Python environment (Anaconda for e.g):
 
-    $ pip install --upgrade pyldpc
+::
+
+    pip install --upgrade pyldpc
 
 Otherwise, we recommend creating this minimal `conda env <https://raw.githubusercontent.com/hichamjanati/pyldpc/master/environment.yml>`_
 
-    $ conda env create --file environment.yml
-    $ conda activate pyldpc-env
-    $ pip install -U pyldpc
+::
+
+    conda env create --file environment.yml
+    conda activate pyldpc-env
+    pip install -U pyldpc
 
 Example
 -------
