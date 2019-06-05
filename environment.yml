@@ -2,7 +2,7 @@ name: pyldpc-env
 
 
 dependencies:
-    - numpy>=1.12
-    - scipy>=0.18.0
+    - numpy>=1.15.4
+    - scipy>=1.0.1
     - pytest
     - matplotlib>=2.0.0

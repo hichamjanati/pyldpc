@@ -7,8 +7,6 @@ def readme():
         return f.read()
 
 
-INSTALL_REQUIRES = ['scipy']
-
 EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov'],
                   'docs': ['sphinx', 'sphinx-gallery',
                            'sphinx_rtd_theme', 'numpydoc',
@@ -16,10 +14,9 @@ EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov'],
                   }
 
 if __name__ == "__main__":
-    setup(name="pyldpc-dev01",
+    setup(name="pyldpc-test",
           packages=find_packages(),
           include_dirs=[np.get_include()],
-          install_requires=INSTALL_REQUIRES,
           extras_require=EXTRAS_REQUIRE,
           version='0.7.6',
           description='Simulation of Low Density Parity Check Codes ldpc',
