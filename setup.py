@@ -14,7 +14,7 @@ EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov'],
                   }
 
 if __name__ == "__main__":
-    setup(name="pyldpc-test",
+    setup(name="pyldpc",
           packages=find_packages(),
           include_dirs=[np.get_include()],
           extras_require=EXTRAS_REQUIRE,
