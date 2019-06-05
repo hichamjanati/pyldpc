@@ -76,6 +76,11 @@ Example
     >>> x = get_message(G, d)
     >>> assert abs(x - v).sum() == 0
 
+Documentation
+-------------
+
+For more examples, see `the pyldpc webpage <https://pyldpc.readthedocs.io/en/latest/>`_.
+
 Contact:
 --------
 Please contact hicham.janati@inria.fr for any bug encountered / any further information.
