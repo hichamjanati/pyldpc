@@ -134,7 +134,9 @@ def coding_matrix(X, sparse=True):
 
     """
 
-    H = np.copy(X)
+    if type(X) == csr_matrix:
+        X = X.toarray()
+    H = X.copy()
     m, n = H.shape
 
     # DOUBLE GAUSS-JORDAN:
