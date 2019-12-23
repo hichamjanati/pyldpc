@@ -15,9 +15,9 @@ systematic = True
                          product([True, False], [False, True], [False, True]))
 def test_audio(systematic, log, sparse):
 
-    n = 25
-    d_v = 4
-    d_c = 5
+    n = 48
+    d_v = 2
+    d_c = 3
     seed = 0
     rnd = np.random.RandomState(seed)
     H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
@@ -25,8 +25,7 @@ def test_audio(systematic, log, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    print(k)
-    snr = 1000
+    snr = 100
 
     audio = rnd.randint(0, 255, size=5)
     audio_bin = audio2bin(audio)
