@@ -11,6 +11,12 @@ pyldpc/tests/__pycache__
 # C extensions
 *.so
 
+
+# doc
+doc/generated/
+doc/auto_examples/
+doc/_build/
+
 # Distribution / packaging
 .py
 .Python
