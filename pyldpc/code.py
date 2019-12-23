@@ -5,152 +5,84 @@ from . import utils
 
 def parity_check_matrix(n, d_v, d_c, seed=None):
     """
-    Builds a regular Parity-Check Matrix H (n, d_v, d_c) following
-    Callager's algorithm.
+    Builds a regular Parity-Check Matrix H following Callager's algorithm.
 
-    Parameters:
+    Parameters
+    ----------
+    n: int, Number of coding bits.
+    d_v: int, Number of parity-check equations.
+    d_c: int, Number of variables in a parity-check equation. d_c Must be
+        greater or equal to d_v and must divide n.
+    seed: int, seed of the random generator.
 
-     n: Number of columns (Same as number of coding bits)
-     d_v: number of ones per column (number of parity-check equations including
-     a certain variable)
-     d_c: number of ones per row (number of variables participating in a
-     certain parity-check equation);
-
-    Errors:
-
-     The number of ones in the matrix is the same no matter how we calculate
-     it (rows or columns), therefore, if m is
-     the number of rows in the matrix:
-
-     m*d_c = n*d_v with m < n (because H is a decoding matrix) => Parameters
-     must verify:
-
-
-     0 - all integer parameters
-     1 - d_v < d_v
-     2 - d_c divides n
-
-    ---------------------------------------------------------------------------------------
-
-     Returns: 2D-array (shape = (m, n))
+    Returns
+    -------
+    H: array (m, n). Where m = d_v * n / d_c
+        LDPC regular matrix H.
 
     """
-    rnd = np.random.RandomState(seed)
+    rng = np.random.RandomState(seed)
     if n % d_c:
-        raise ValueError("""d_c must divide n. help(coding_matrix)
-                            for more info.""")
+        raise ValueError("""d_c must divide n for a regular LDPC matrix H.""")
 
     if d_c <= d_v:
-        raise ValueError("""d_c must be greater than d_v.
-                            help(coding_matrix) for
-                            more info.""")
+        raise ValueError("""d_c must be greater than d_v.""")
 
     m = (n * d_v) // d_c
 
-    Set = np.zeros((m//d_v, n), dtype=int)
-    a = m // d_v
+    block = np.zeros((m // d_v, n), dtype=int)
+    H = np.empty((m, n))
+    block_size = m // d_v
 
-    # Filling the first set with consecutive ones in each row of the set
+    # Filling the first block with consecutive ones in each row of the block
 
-    for i in range(a):
-        for j in range(i * d_c, (i+1 * d_c)):
-            Set[i, j] = 1
+    for i in range(block_size):
+        for j in range(i * d_c, (i+1) * d_c):
+            block[i, j] = 1
+    H[:block_size] = block
 
-    # Create list of Sets and append the first reference set
-    Sets = []
-    Sets.append(Set.tolist())
-
-    # reate remaining sets by permutations of the first set's columns:
-    i = 1
+    # reate remaining blocks by permutations of the first block's columns:
     for i in range(1, d_v):
-        newSet = rnd.permutation(np.transpose(Set)).T.tolist()
-        Sets.append(newSet)
-
-    # Returns concatenated list of sest:
-    H = np.concatenate(Sets)
+        H[i * block_size: (i + 1) * block_size] = rng.permutation(block.T).T
+    H = H.astype(int)
     return H
 
 
-def coding_matrix(X, sparse=True):
+def coding_matrix(H, sparse=True):
 
     """
-    CAUTION: RETURNS tG TRANSPOSED CODING X.
-    Function Applies gaussjordan Algorithm on Columns and rows of X in
-    order to permute Basis Change matrix using Matrix Equivalence.
-    Let A be the treated Matrix. refAref the double row reduced echelon Matrix.
+    Returns the generating coding matrix G given the LDPC matrix H.
 
-    refAref has the form:
+    Parameters
+    ----------
 
-    (e.g) : |1 0 0 0 0 0 ... 0 0 0 0|
-            |0 1 0 0 0 0 ... 0 0 0 0|
-            |0 0 0 0 0 0 ... 0 0 0 0|
-            |0 0 0 1 0 0 ... 0 0 0 0|
-            |0 0 0 0 0 0 ... 0 0 0 0|
-            |0 0 0 0 0 0 ... 0 0 0 0|
+    H: array (m, n). Parity check matrix of an LDPC code with n coding bits.
+    sparse: (boolean, default True): if `True`, scipy.sparse format is used
+        to speed up computation.
 
+    Returns
+    -------
 
-    First, let P1 Q1 invertible matrices: P1.A.Q1 = refAref
-
-    We would like to calculate:
-    P,Q are the square invertible matrices of the appropriate size so that:
-
-    P.A.Q = J.  Where J is the matrix of the form (having X's shape):
-
-    | I_p O | where p is X's rank and I_p Identity matrix of size p.
-    | 0   0 |
-
-    Therfore, we perform permuations of rows and columns in refAref
-    (same changes are applied to Q1 in order to get final Q matrix)
-
-    NOTE: P IS NOT RETURNED BECAUSE WE DO NOT NEED IT TO SOLVE H.G' = 0
-    P IS INVERTIBLE, WE GET SIMPLY RID OF IT.
-
-    Then
-
-    solves: inv(P).J.inv(Q).G' = 0 (1) where inv(P) = P^(-1) and
-    P.H.Q = J. Help(PJQ) for more info.
-
-    Let Y = inv(Q).G', equation becomes J.Y = 0 (2) whilst:
-
-    J = | I_p O | where p is H's rank and I_p Identity matrix of size p.
-        | 0   0 |
-
-    Knowing that G must have full rank, a solution of (2)
-    is Y = |  0  | Where k = n-p.
-           | I-k |
-
-    Because of rank-nullity theorem.
-
-    -----------------
-    parameters:
-
-    H: Parity check matrix.
-    sparse: (optional, default True): use scipy.sparse format to speed up
-    computation.
-    ---------------
-    returns:
-
-    tG: Transposed Coding Matrix.
+    G.T: array (k, n). Transposed coding matrix.
 
     """
 
-    if type(X) == csr_matrix:
-        X = X.toarray()
-    H = X.copy()
+    if type(H) == csr_matrix:
+        H = H.toarray()
     m, n = H.shape
 
     # DOUBLE GAUSS-JORDAN:
 
-    Href_colonnes, tQ = utils.gaussjordan(np.transpose(H), 1)
+    Href_colonnes, tQ = utils.gaussjordan(H.T, 1)
 
     Href_diag = utils.gaussjordan(np.transpose(Href_colonnes))
 
-    Q = np.transpose(tQ)
+    Q = tQ.T
 
-    k = n - sum(Href_diag.reshape(m*n))
+    k = n - Href_diag.sum()
 
     Y = np.zeros(shape=(n, k)).astype(int)
-    Y[n-k:, :] = np.identity(k)
+    Y[n - k:, :] = np.identity(k)
 
     if sparse:
         Q = csr_matrix(Q)
@@ -161,36 +93,26 @@ def coding_matrix(X, sparse=True):
     return H, tG
 
 
-def coding_matrix_systematic(X, sparse=True):
+def coding_matrix_systematic(H, sparse=True):
 
-    """
-    Description:
+    """Computes a coding matrix G in systematic format with an identity block.
 
-    Solves H.G' = 0 and finds the coding matrix G in the systematic form :
-    [I_k  A] by applying permutations on X.
+    Parameters
+    ----------
 
-    CAUTION: RETURNS TUPLE (Hp,tGS) WHERE Hp IS A MODIFIED VERSION OF THE
-    GIVEN PARITY CHECK X, tGS THE TRANSPOSED
-    SYSTEMATIC CODING X ASSOCIATED TO Hp. YOU MUST USE THE RETURNED TUPLE
-    IN CODING AND DECODING, RATHER THAN THE UNCHANGED
-    PARITY-CHECK X H.
+    H: array (m, n). Parity-check matrix.
+    sparse: (boolean, default True): if `True`, scipy.sparse is used
+    to speed up computation if n > 100.
 
-    -------------------------------------------------
-    Parameters:
+    Returns
+    -------
 
-    X: 2D-Array. Parity-check matrix.
-    sparse: (optional, default True): use scipy.sparse matrices
-    to speed up computation if n>100.
-
-    ------------------------------------------------
-
-    >>> Returns Tuple of 2D-arrays (Hp,GS):
-        Hp: Modified H: permutation of columns (The code doesn't change)
-        tGS: Transposed Systematic Coding matrix associated to Hp.
+    H_new: (m, n) array. Modified parity-check matrix given by a permutation of
+        the columns of the provided H.
+    G_systematic.T: Transposed Systematic Coding matrix associated to H_new.
 
     """
 
-    H = X.copy()
     m, n = H.shape
 
     if n > 100 and sparse:
@@ -245,25 +167,26 @@ def coding_matrix_systematic(X, sparse=True):
     if sparse:
         P = csr_matrix(P)
 
-    Hp = utils.binaryproduct(H, np.transpose(P))
+    H_new = utils.binaryproduct(H, np.transpose(P))
 
-    GS = np.zeros((k, n), dtype=int)
-    GS[:, :k] = np.identity(k)
-    GS[:, k:] = (Hrowreduced[:n-k, n-k:]).T
+    G_systematic = np.zeros((k, n), dtype=int)
+    G_systematic[:, :k] = np.identity(k)
+    G_systematic[:, k:] = (Hrowreduced[:n-k, n-k:]).T
 
-    return Hp, GS.T
+    return H_new, G_systematic.T
 
 
-def make_ldpc(n, d_v, d_c, seed=None, systematic=False, sparse=True):
+def make_ldpc(n, d_v, d_c, systematic=False, sparse=True, seed=None):
     """Creates an LDPC coding and decoding matrices H and G.
     Parameters:
     -----------
-    n: Number of columns (same as number of coding bits)
-    d_v: number of ones per column (number of parity-check equations including
-    a certain variable)
-    d_c: number of ones per row (number of variables participating in a
-    certain parity-check equation);
-    systematic: optional, default False. if True, constructs a systematic
+    Parameters
+    ----------
+    n: int, Number of coding bits.
+    d_v: int, Number of parity-check equations.
+    d_c: int, Number of variables in a parity-check equation. d_c Must be
+        greater or equal to d_v and must divide n.
+    systematic: boolean, default False. if True, constructs a systematic
     coding matrix G.
 
     Returns:
