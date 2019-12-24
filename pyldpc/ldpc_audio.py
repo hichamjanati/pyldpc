@@ -3,43 +3,28 @@ import warnings
 
 from .utils_audio import bin2audio
 from .encoder import encode
-from .decoder import (decode_bp_ext, decode_logbp_ext,
-                      get_message)
+from .decoder import _decode_logbp_ext, get_message
 from .utils import bitsandnodes
 
 
 def encode_audio(tG, audio_bin, snr, seed=None):
+    """Encode a binary audio file.
+
+    Parameters
+    ----------
+    tG: array (n, 17). Coding matrix. `k` is the number of bits to be coded.
+        k must be equal to 17 for audio files. `n` is the length of the
+        codewords.
+    audio_bin: array (length, 17). Binary audio.
+    snr : float. Signal to noise ratio of the channel.
+    seed: int. random state initialization.
+
+    Returns
+    -------
+    coded_audio: array (length n) audio in the codeword space
+    noisy_audio: array (length, 17) visualization of the audio data.
+
     """
-    Codes a binary audio array (Therefore must be a 2D-array shaped
-    (length,17)). Each element (17 bits)
-    is considered a k-bits message. If the original binary array is shaped
-    (length,17). The coded image will be shaped
-    (length, n) Where n is the length of a codeword.
-    Then a gaussian noise N(0, snr) is added to the codeword.
-
-    Remember SNR: Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of
-    the AWGN used in coding.
-
-    Of course, "listening" to an audio file with n-bits array is impossible,
-    that's why if coding Matrix G is systematic,
-    reading the noisy sound can be possible by gathering the 17 first bits
-    of each
-    n-bits codeword to the left, the redundant bits are dropped.
-    Then the noisy sound is changed from bin to int16.
-    returns  a tuple: the (length, n) coded audio, and the noisy one (length).
-
-    Parameters:
-
-    tG: Transposed coding Matrix G - must be systematic if you want to see
-    what the noisy audio sounds like. See codingMatrix_systematic.
-    audio_bin: 2D-array of a binary audio shaped (length,17).
-    SNR: Signal-Noise Ratio, SNR = 10log(1/variance) in decibels of the
-    AWGN used in coding.
-
-    Returns:
-    Tuple: noisy_audio, coded_audio
-    """
-
     n, k = tG.shape
     length = audio_bin.shape[0]
 
@@ -62,34 +47,22 @@ def encode_audio(tG, audio_bin, snr, seed=None):
     return coded_audio, noisy_audio
 
 
-def decode_audio(tG, H, audio_coded, snr, maxiter=1, log=True):
+def decode_audio(tG, H, audio_coded, snr, maxiter=1000):
+    """Decode a received noisy audio file in the codeword.
+
+    Parameters
+    ----------
+    tG: array (n, k) coding matrix G
+    H: array (m, n) decoding matrix H
+    audio_coded: array (length n) audio in the codeword space
+    snr: float. signal to noise ratio assumed of the channel.
+    maxiter: int. Max number of BP iterations to perform.
+
+    Returns
+    -------
+    audio_decoded: array (length,) original audio.
 
     """
-    Sound decode function. Taked the 2-D binary coded audio array where
-    each element is a codeword n-bits array and decodes
-    every one of them. Needs H to decode and G to solve v.G = x where x is
-    the codeword element decoded by the function
-    itself. When v is found for each codeword, the decoded audio can be
-    transformed from binary to int16 format and read.
-
-    Parameters:
-
-    tG: Transposed coding Matrix
-    H: Parity-Check Matrix (decode matrix).
-    audio_coded: binary coded audio returned by the function Soundcoding.
-    Must be shaped (length, n) where n is a
-                the length of a codeword (also the number of H's columns)
-
-    snr: Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of the
-    AWGN used in coding.
-
-    log: (optional, default = True), if True, Full-log version of bp
-    algorithm is used.
-    maxiter: (optional, default =1), number of iterations of decode.
-    increase if snr is < 5db.
-
-    """
-
     n, k = tG.shape
     if k != 17:
         raise ValueError("""coding matrix G must have 17 rows
@@ -100,11 +73,7 @@ def decode_audio(tG, H, audio_coded, snr, maxiter=1, log=True):
 
     audio_decoded_bin = np.zeros(shape=(length, k), dtype=int)
 
-    if log:
-        decodefunction = decode_logbp_ext
-    else:
-        decodefunction = decode_bp_ext
-
+    decodefunction = _decode_logbp_ext
     systematic = True
 
     if not (tG[:k, :] == np.identity(k)).all():
@@ -131,10 +100,7 @@ def decode_audio(tG, H, audio_coded, snr, maxiter=1, log=True):
 
 
 def ber_audio(original_audio_bin, decoded_audio_bin):
-    """
-    Computes Bit-Error-Rate (BER) by comparing 2 binary audio arrays.
-    The ratio of bit errors over total number of bits is returned.
-    """
+    """Compute Bit-Error-Rate (BER) by comparing 2 binary audio arrays."""
     if not original_audio_bin.shape == decoded_audio_bin.shape:
         raise ValueError("""Original and decoded audio files\'
                             shapes don\'t match !""")

@@ -4,21 +4,7 @@ from .utils import int2bitarray, bitarray2int
 
 
 def audio2bin(audio_array):
-
-    """
-    Converts the first audio channel (first column) of an int16 audio_array
-    to a 17-bits binary form.
-
-    Parameters:
-    - audio-array: must be int16. May be 2D-array but the function only
-    converts one channel.
-
-    returns:
-    - 17 bits binary audio-array shaped (length,17) where length is the
-    audio_array's length.
-
-    """
-
+    """Convert an audio_array to a 17-bits binary array."""
     # Keep the first channel of the audio file only:
     if len(audio_array.shape) > 1:
         audio = audio_array[:, 0]
@@ -38,19 +24,7 @@ def audio2bin(audio_array):
 
 
 def bin2audio(audio_bin):
-
-    """
-    Converts a 17-bits binary audio array to an int16 1D-(one channel)
-    audio_array.
-
-    Parameters:
-    - audio_bin: 17 bits binary array shaped (length,17).
-
-    returns:
-    - int16 1D-audio-array of size = length.
-
-    """
-
+    """Convert a 17-bits binary array to an audio array."""
     length = audio_bin.shape[0]
 
     audio = np.zeros(length, dtype=int)

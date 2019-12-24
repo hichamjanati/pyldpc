@@ -1,3 +1,4 @@
+"""Coding module."""
 import numpy as np
 from scipy.sparse import csr_matrix
 from . import utils
@@ -5,7 +6,7 @@ from . import utils
 
 def parity_check_matrix(n_code, d_v, d_c, seed=None):
     """
-    Builds a regular Parity-Check Matrix H following Callager's algorithm.
+    Build a regular Parity-Check Matrix H following Callager's algorithm.
 
     Parameters
     ----------
@@ -50,13 +51,10 @@ def parity_check_matrix(n_code, d_v, d_c, seed=None):
 
 
 def coding_matrix(H, sparse=True):
-
-    """
-    Returns the generating coding matrix G given the LDPC matrix H.
+    """Return the generating coding matrix G given the LDPC matrix H.
 
     Parameters
     ----------
-
     H: array (n_equations, n_code). Parity check matrix of an LDPC code with
         code length `n_code` and `n_equations` number of equations.
     sparse: (boolean, default True): if `True`, scipy.sparse format is used
@@ -64,11 +62,9 @@ def coding_matrix(H, sparse=True):
 
     Returns
     -------
-
     G.T: array (n_bits, n_code). Transposed coding matrix.
 
     """
-
     if type(H) == csr_matrix:
         H = H.toarray()
     n_equations, n_code = H.shape
@@ -96,25 +92,21 @@ def coding_matrix(H, sparse=True):
 
 
 def coding_matrix_systematic(H, sparse=True):
-
-    """Computes a coding matrix G in systematic format with an identity block.
+    """Compute a coding matrix G in systematic format with an identity block.
 
     Parameters
     ----------
-
     H: array (n_equations, n_code). Parity-check matrix.
     sparse: (boolean, default True): if `True`, scipy.sparse is used
     to speed up computation if n_code > 1000.
 
     Returns
     -------
-
     H_new: (n_equations, n_code) array. Modified parity-check matrix given by a
         permutation of the columns of the provided H.
     G_systematic.T: Transposed Systematic Coding matrix associated to H_new.
 
     """
-
     n_equations, n_code = H.shape
 
     if n_code > 1000 and sparse:
@@ -181,7 +173,7 @@ def coding_matrix_systematic(H, sparse=True):
 
 
 def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
-    """Creates an LDPC coding and decoding matrices H and G.
+    """Create an LDPC coding and decoding matrices H and G.
 
     Parameters
     ----------
@@ -198,8 +190,8 @@ def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
     H: array (n_equations, n_code). Parity check matrix of an LDPC code with
         code length `n_code` and `n_equations` number of equations.
     G: (n_code, n_bits) array coding matrix.
-    """
 
+    """
     H = parity_check_matrix(n_code, d_v, d_c, seed=seed)
     if systematic:
         H, G = coding_matrix_systematic(H, sparse=sparse)

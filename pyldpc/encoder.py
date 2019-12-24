@@ -3,19 +3,16 @@ from . import utils
 
 
 def encode_random_message(tG, snr, seed=None):
-    """Encodes a random message given a generating matrix tG and a SNR.
+    """Encode a random message given a generating matrix tG and a SNR.
 
     Parameters
     ----------
-
     tG: array or scipy.sparse.csr_matrix (m, k). Transposed coding matrix
     obtained from `pyldpc.make_ldpc`.
-
     snr: float. Signal-Noise Ratio. SNR = 10log(1 / variance) in decibels.
 
     Returns
     -------
-
     v: array (k,) random message generated.
     y: array (n,) coded message + noise.
 
@@ -38,11 +35,10 @@ def encode_random_message(tG, snr, seed=None):
 
 
 def encode(tG, v, snr, seed=None):
-    """Encodes a binary message and adds Gaussian noise.
+    """Encode a binary message and adds Gaussian noise.
 
     Parameters
     ----------
-
     tG: array or scipy.sparse.csr_matrix (m, k). Transposed coding matrix
     obtained from `pyldpc.make_ldpc`.
 
@@ -52,8 +48,8 @@ def encode(tG, v, snr, seed=None):
 
     Returns
     -------
-
     y: array (n,) coded message + noise.
+
     """
     n, k = tG.shape
 
