@@ -57,7 +57,7 @@ Example
     >>> k = G.shape[1]
     >>> v = np.random.randint(2, size=k)
     >>> y = encode(G, v, snr)
-    >>> d = decode(H, y, snr, maxiter=100, log=True)
+    >>> d = decode(H, y, snr)
     >>> x = get_message(G, d)
     >>> assert abs(x - v).sum() == 0
 
