@@ -4,33 +4,20 @@ from . import utils
 
 
 def decode(H, y, snr, maxiter=100, log=True):
-    """Decoder function."""
-    f = decode_bp
+    """Decodes a Gaussian noise corrupted n bits message using BP algorithm.
+
+    Parameters
+    ----------
+
+    H: array (n_equations, n_code). """
+    f = _decode_bp
     if log:
-        f = decode_logbp
+        f = _decode_logbp
     return f(H, y, snr, maxiter=maxiter)
 
 
-def decode_bp(H, y, snr, maxiter=100):
-
-    """ Decoding function using Belief Propagation algorithm.
-        IMPORTANT: H can be scipy.sparse.csr_matrix object to speed up
-        calculations if n > 1000 highly recommanded.
-    -----------------------------------
-    Parameters:
-
-    H: 2D-array (m, n) (OR scipy.sparse.csr_matrix object) Parity check matrix.
-
-    y: n-vector recieved after transmission in the channel. (In general,
-    returned by Coding Function)
-
-    Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of the AWGN used
-    in coding.
-
-    max_iter: (default = 1) max iterations of the main loop. Increase if
-    decoding is not error-free.
-
-     """
+def _decode_bp(H, y, snr, maxiter=100):
+    """Decodes a Gaussian noise corrupted n bits message using BP algorithm."""
 
     m, n = H.shape
     sigma = 10 ** (-snr / 20)
@@ -125,26 +112,8 @@ def decode_bp(H, y, snr, maxiter=100):
     return x
 
 
-def decode_logbp(H, y, snr, maxiter=1):
-
-    """ Decoding function using Belief Propagation algorithm
-    (logarithmic version)
-    IMPORTANT: if H is large (n>1000), H should be scipy.sparse.csr_matrix
-    object to speed up calculations
-    (highly recommanded. )
-    -----------------------------------
-    Parameters:
-
-    H: 2D-array (m, n) (OR scipy.sparse.csr_matrix object) Parity check matrix
-    y: n-vector recieved after transmission in the channel. (In particular,
-    returned by `encode` Function)
-    Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of the AWGN
-    used in coding.
-
-    maxiter: (default = 1) max iterations of the main loop.
-    Increase if decoding is not error-free.
-
-     """
+def _decode_logbp(H, y, snr, maxiter=100):
+    """Performs BP algorithm in log-domain."""
 
     m, n = H.shape
 
@@ -215,27 +184,8 @@ def decode_logbp(H, y, snr, maxiter=1):
     return x
 
 
-def decode_bp_ext(H, bits, nodes, y, snr, maxiter=1):
-
-    """ Decoding function using Belief Propagation algorithm.
-
-        IMPORTANT: H can be scipy.sparse.csr_matrix object to speed
-        up calculations if n > 1000 highly recommanded.
-    -----------------------------------
-    Parameters:
-
-    H: 2D-array (OR scipy.sparse.csr_matrix object) Parity check matrix,
-    shape = (m, n)
-    bits, nodes: returned by `bitsandnodes` function.
-    y: n-vector recieved after transmission in the channel. (In general,
-    returned by `coding` Function)
-    Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of the AWGN
-    used in coding.
-    maxiter: (default = 1) max iterations of the main loop.
-    Increase if decoding is not error-free.
-
-     """
-
+def _decode_bp_ext(H, bits, nodes, y, snr, maxiter=100):
+    """BP algorithm on specific nodes and bits."""
     m, n = H.shape
 
     sigma = 10 ** (-snr / 20)
@@ -326,27 +276,8 @@ def decode_bp_ext(H, bits, nodes, y, snr, maxiter=1):
     return x
 
 
-def decode_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
-
-    """ Decoding function using Belief Propagation algorithm.
-    in logdomain.
-
-        IMPORTANT: H can be scipy.sparse.csr_matrix object to speed
-        up calculations if n > 1000 highly recommanded.
-    -----------------------------------
-    Parameters:
-
-    H: 2D-array (OR scipy.sparse.csr_matrix object) Parity check matrix,
-    shape = (m, n)
-    bits, nodes: returned by `bitsandnodes` function.
-    y: n-vector recieved after transmission in the channel. (In general,
-    returned by `coding` Function)
-    Signal-Noise Ratio: SNR = 10log(1/variance) in decibels of the AWGN
-    used in coding.
-    maxiter: (default = 1) max iterations of the main loop.
-    Increase if decoding is not error-free.
-
-     """
+def _decode_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
+    """BP algorithm in log-domain on specific nodes and bits."""
 
     m, n = H.shape
 
@@ -418,21 +349,13 @@ def decode_logbp_ext(H, bits, nodes, y, snr, maxiter=1):
 
 
 def get_message(tG, x):
+    """Computes the original `n_bits` message from a `n_code` codeword `x`.
 
-    """
-    Let G be a coding matrix. tG its transposed matrix.
-    x a n-vector received after decoding.
-    DecodedMessage Solves the equation on k-bits message v:
-    x = v.G => G'v'= x' by applying GaussElimination on G'.
+    Parameters
+    ----------
 
-    -------------------------------------
-
-    Parameters:
-
-    tG: Transposed Coding Matrix. Must have more rows than columns to solve
-    the linear system. Must be full rank.
-    x: n-array. Must be in the Code (in Ker(H)).
-
+    tG: array (n_code, n_bits) coding matrix tG.
+    x: array (n_code,) decoded codeword of length `n_code`.
     """
     n, k = tG.shape
 
