@@ -12,11 +12,10 @@ import numpy as np
 from pyldpc import (make_ldpc, binaryproduct, decode, get_message, encode)
 from matplotlib import pyplot as plt
 
-n = 100
-d_v = 4
-d_c = 5
+n = 24
+d_v = 2
+d_c = 3
 seed = 42
-
 ##################################################################
 # First we create an LDPC code i.e a pair of decoding and coding matrices
 # H and G. H is a regular parity-check matrix with d_v ones per row
@@ -34,14 +33,17 @@ print("Code length:", k)
 
 
 errors = []
-snrs = np.arange(-10, 10, 2)
+snrs = np.linspace(2., 12, 20)
 v = np.arange(k) % 2  # fixed k bits message
+n_trials = 100  # number of transmissions with different noise
 for snr in snrs:
-    y = encode(G, v, snr, seed)
-    d = decode(H, y, snr, maxiter=100, log=True)
-    x = get_message(G, d)
-    error = abs(v - x).sum() / k
-    errors.append(error)
+    error = 0.
+    for ii in range(n_trials):
+        y = encode(G, v, snr)
+        d = decode(H, y, snr)
+        x = get_message(G, d)
+        error += abs(v - x).sum() / k
+    errors.append(error / n_trials)
 
 plt.figure()
 plt.plot(snrs, errors, color="indianred")
