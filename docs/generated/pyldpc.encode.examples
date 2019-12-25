@@ -1,0 +1,40 @@
+
+
+Examples using ``pyldpc.encode``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows a simulation of the transmission of a binary message through a gaussian whit...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_coding_decoding_simulation_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_coding_decoding_simulation.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+    * :ref:`sphx_glr_auto_examples_plot_coding_decoding_simulation.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how coding and decoding can be done in parallel to speed up computations. ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_parallel_decoding_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_parallel_decoding.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+    * :ref:`sphx_glr_auto_examples_plot_parallel_decoding.py`
