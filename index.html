@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to pyldpc documentation &#8212; pyldpc 0.7.7 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          pyldpc</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.7.7</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="https://github.com/hichamjanati/pyldpc">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">General examples</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Welcome to pyldpc documentation</a><ul>
+<li><a class="reference internal" href="#description">Description:</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#contact">Contact:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/index.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="welcome-to-pyldpc-documentation">
+<h1>Welcome to pyldpc documentation<a class="headerlink" href="#welcome-to-pyldpc-documentation" title="Permalink to this headline">¶</a></h1>
+<p><em>version 0.7.7</em></p>
+<div class="section" id="description">
+<h2>Description:<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Simulation of regular LDPC codes.</p></li>
+<li><p>Probabilistic decoding: Belief Propagation algorithm for gaussian white noise transmission.</p></li>
+<li><p>Simulation application to image and audio data.</p></li>
+</ul>
+<p><strong>Image coding-decoding example:</strong></p>
+<img alt="https://media.giphy.com/media/l4KicsAauqIWjeFR6/giphy.gif" src="https://media.giphy.com/media/l4KicsAauqIWjeFR6/giphy.gif" />
+<img alt="https://media.giphy.com/media/l0COHC49bK6g7yIPm/giphy.gif" src="https://media.giphy.com/media/l0COHC49bK6g7yIPm/giphy.gif" />
+<p><strong>Sound coding-decoding example:</strong></p>
+<blockquote>
+<div><p><a class="reference external" href="http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/Example-Sound.ipynb">Sound Transmission</a></p>
+</div></blockquote>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>If you already have a working Python environment (Anaconda for e.g):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pyldpc</span>
+</pre></div>
+</div>
+<p>Otherwise, we recommend creating this minimal <a class="reference external" href="https://raw.githubusercontent.com/hichamjanati/pyldpc/master/environment.yml">conda env</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">--</span><span class="n">file</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">pyldpc</span><span class="o">-</span><span class="n">env</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pyldpc</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyldpc</span> <span class="kn">import</span> <span class="n">make_ldpc</span><span class="p">,</span> <span class="n">encode</span><span class="p">,</span> <span class="n">decode</span><span class="p">,</span> <span class="n">get_message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_v</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_c</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snr</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span><span class="p">,</span> <span class="n">G</span> <span class="o">=</span> <span class="n">make_ldpc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d_v</span><span class="p">,</span> <span class="n">d_c</span><span class="p">,</span> <span class="n">systematic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">encode</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">snr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">snr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">get_message</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="contact">
+<h2>Contact:<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h2>
+<p>Please create an issue on <a class="reference external" href="https://github.com/hichamjanati/pyldpc">Github</a> for any bug encountered / any further information.</p>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<p>All dependencies are in <code class="docutils literal notranslate"><span class="pre">./environment.yml</span></code></p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="auto_examples/index.html">Examples</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>A set of examples: <a class="reference external" href="auto_examples/index.html">User Guide</a>.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Hicham Janati.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
