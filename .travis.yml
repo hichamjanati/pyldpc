@@ -37,6 +37,7 @@ install:
   - pip install -e .
 
 script:
+  - export NUMBA_DISABLE_JIT=1
   - pytest -lv --cov-report term-missing pyldpc --cov=pyldpc --cov-config .coveragerc
   - make
   - flake8 --count pyldpc

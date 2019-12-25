@@ -12,6 +12,7 @@ def parity_check_matrix(n_code, d_v, d_c, seed=None):
     ----------
     n_code: int, Length of the codewords.
     d_v: int, Number of parity-check equations including a certain bit.
+        Must be greater or equal to 2.
     d_c: int, Number of bits in the same parity-check equation. d_c Must be
         greater or equal to d_v and must divide n.
     seed: int, seed of the random generator.
@@ -24,11 +25,15 @@ def parity_check_matrix(n_code, d_v, d_c, seed=None):
 
     """
     rng = np.random.RandomState(seed)
-    if n_code % d_c:
-        raise ValueError("""d_c must divide n for a regular LDPC matrix H.""")
+
+    if d_v <= 1:
+        raise ValueError("""d_v must be at least 2.""")
 
     if d_c <= d_v:
         raise ValueError("""d_c must be greater than d_v.""")
+
+    if n_code % d_c:
+        raise ValueError("""d_c must divide n for a regular LDPC matrix H.""")
 
     n_equations = (n_code * d_v) // d_c
 
