@@ -11,15 +11,11 @@ pyldpc/tests/__pycache__
 # C extensions
 *.so
 
-# zip
-*.zip
-*.pickle
-*.ipynb
 
-# doc
-doc/generated/
-doc/auto_examples/
-doc/_build/
+# docs
+docs/generated/
+docs/auto_examples/
+docs/_build/
 
 # Distribution / packaging
 .py
