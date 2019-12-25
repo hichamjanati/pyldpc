@@ -94,7 +94,7 @@ for ax_row, titles, img_list, cmap in zip(axes, [titles_eye, titles_tiger],
                                           all_imgs, ["gray", None]):
     for ax, data, title in zip(ax_row, img_list, titles):
         ax.imshow(data, cmap=cmap)
-        ax.set_title(title)
+        ax.set_title(title, fontsize=20)
         ax.set_xticks([])
         ax.set_yticks([])
 plt.tight_layout()

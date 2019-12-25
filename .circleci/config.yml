@@ -16,7 +16,7 @@ jobs:
             conda env create --file environment.yml python=3
             source activate pyldpc-env
             conda install --yes pip numpy scipy scikit-learn matplotlib sphinx sphinx_rtd_theme numpydoc pillow
-            pip install sphinx-gallery
+            pip install sphinx-gallery sphinx_bootstrap_theme
             pip install download
             python setup.py build_ext --inplace
             pip install -e .

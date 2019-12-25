@@ -11,6 +11,10 @@ pyldpc/tests/__pycache__
 # C extensions
 *.so
 
+# zip
+*.zip
+*.pickle
+*.ipynb
 
 # doc
 doc/generated/
