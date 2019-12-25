@@ -232,7 +232,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'project-template.tex', u'project-template Documentation',
-   u'Vighnesh Birodkar', 'manual'),
+   u'Hicham Janati', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -262,7 +262,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'project-template', u'project-template Documentation',
-     [u'Vighnesh Birodkar'], 1)
+     [u'Hicham Janati'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -275,9 +275,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'project-template', u'project-template Documentation',
-   u'Vighnesh Birodkar', 'project-template', 'One line description of project.',
-   'Miscellaneous'),
+  ('index', 'pyLDPC', u'pyLDPC Documentation',
+   u'Hicham Janati', 'pyLDPC', 'LDPC Parity-check codes.',
+   'LDPC codes'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -301,8 +301,10 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
-    'sklearn': ('http://scikit-learn.org/stable', None)
+    'sklearn': ('http://scikit-learn.org/stable', None),
+    'numba': ('https://numba.pydata.org/', None)
 }
+
 
 # sphinx-gallery configuration
 sphinx_gallery_conf = {
