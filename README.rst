@@ -79,4 +79,4 @@ Example
 Documentation
 -------------
 
-For more examples, see `the pyldpc webpage <https://pyldpc.readthedocs.io/en/latest/>`_.
+For more examples, see `the pyldpc webpage <https://hichamjanati.github.io/pyldpc/>`_.
