@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# project-template documentation build configuration file, created by
+# pyLDPC documentation build configuration file, created by
 # sphinx-quickstart on Mon Jan 18 14:44:12 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -16,13 +16,23 @@ import sys
 import os
 
 import sphinx_gallery
-import sphinx_rtd_theme
+from sphinx_gallery.sorting import ExplicitOrder
+import matplotlib
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
+
+matplotlib.use('agg')
+
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+
+if not os.path.isdir('_images'):
+    os.mkdir('_images')
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -74,7 +84,7 @@ plot_gallery = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'LDPC Gallager codes'
+project = u'pyldpc'
 copyright = u'2019, Hicham Janati'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -120,7 +130,7 @@ exclude_patterns = ['_build', '_templates']
 pygments_style = 'sphinx'
 
 # Custom style
-html_style = 'css/project-template.css'
+# html_style = 'css/pyLDPC.css'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -133,15 +143,31 @@ html_style = 'css/project-template.css'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+# At the top.
+
+import sphinx_bootstrap_theme
+
+# ...
+
+# Activate the theme.
+html_theme = 'bootstrap'
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+
+html_theme_options = {
+    'navbar_sidebarrel': False,
+    'navbar_links': [
+        ("Examples", "auto_examples/index"),
+        ("API", "api"),
+        ("GitHub", "https://github.com/hichamjanati/pyldpc", True)
+    ],
+    'bootswatch_theme': "cerulean"
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -162,7 +188,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['_static', '_images']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -211,7 +237,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'project-templatedoc'
+htmlhelp_basename = 'pyLDPCdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -231,7 +257,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'project-template.tex', u'project-template Documentation',
+  ('index', 'pyLDPC.tex', u'pyLDPC Documentation',
    u'Hicham Janati', 'manual'),
 ]
 
@@ -261,7 +287,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'project-template', u'project-template Documentation',
+    ('index', 'pyLDPC', u'pyLDPC Documentation',
      [u'Hicham Janati'], 1)
 ]
 
@@ -276,8 +302,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'pyLDPC', u'pyLDPC Documentation',
-   u'Hicham Janati', 'pyLDPC', 'LDPC Parity-check codes.',
-   'LDPC codes'),
+   u'Hicham Janati', 'pyLDPC', 'LDPC Codes simulation',
+   'LDPC'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -301,19 +327,37 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
-    'sklearn': ('http://scikit-learn.org/stable', None),
-    'numba': ('https://numba.pydata.org/', None)
+    'numba': ('https://numba.pydata.org/', None),
 }
 
+##############################################################################
+# sphinx-gallery
 
-# sphinx-gallery configuration
+examples_dirs = ['../examples']
+gallery_dirs = ['auto_examples']
+
+
+report_scraper = None
+scrapers = ('matplotlib',)
+
 sphinx_gallery_conf = {
     'doc_module': 'pyldpc',
+    'reference_url': dict(pyldpc=None),
+    'examples_dirs': examples_dirs,
+    'subsection_order': ExplicitOrder(['../examples/plot_coding_decoding_simulation.py',
+                                       '../examples/plot_parallel_decoding.py',
+                                       '../examples/plot_image_transmission.py']),
+    'gallery_dirs': gallery_dirs,
+    'plot_gallery': 'True',  # Avoid annoying Unicode/bool default warning
+    'thumbnail_size': (160, 112),
+    'min_reported_time': 1.,
     'backreferences_dir': os.path.join('generated'),
-    'reference_url': {
-        'pyldpc': None}
+    'abort_on_example_error': False,
+    'image_scrapers': scrapers,
+    'show_memory': True,
 }
 
-def setup(app):
-    # a copy button to copy snippet of code from the documentation
-    app.add_javascript('js/copybutton.js')
+
+# def setup(app):
+#     # a copy button to copy snippet of code from the documentation
+#     app.add_javascript('js/copybutton.js')

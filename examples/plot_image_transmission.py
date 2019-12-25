@@ -89,7 +89,7 @@ titles_eye = ["Original", "Noisy | Err = %.2f %%" % error_noisy_eye,
 titles_tiger = ["Original", "Noisy | Err = %.2f %%" % error_noisy_tiger,
                 "Decoded | Err = %.2f %%" % error_decoded_tiger]
 all_imgs = [[eye, eye_noisy, eye_decoded], [tiger, tiger_noisy, tiger_decoded]]
-f, axes = plt.subplots(2, 3, figsize=(12, 4))
+f, axes = plt.subplots(2, 3, figsize=(18, 12))
 for ax_row, titles, img_list, cmap in zip(axes, [titles_eye, titles_tiger],
                                           all_imgs, ["gray", None]):
     for ax, data, title in zip(ax_row, img_list, titles):

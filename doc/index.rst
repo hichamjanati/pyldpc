@@ -63,7 +63,7 @@ Example
 
 Contact:
 --------
-Please contact hicham.janati@inria.fr for any bug encountered / any further information.
+Please create an issue on `Github <https://github.com/hichamjanati/pyldpc>`_ for any bug encountered / any further information.
 
 Dependencies
 ============
