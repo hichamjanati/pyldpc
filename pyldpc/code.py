@@ -24,7 +24,7 @@ def parity_check_matrix(n_code, d_v, d_c, seed=None):
         equations.
 
     """
-    rng = np.random.RandomState(seed)
+    rng = utils.check_random_state(seed)
 
     if d_v <= 1:
         raise ValueError("""d_v must be at least 2.""")
@@ -197,6 +197,8 @@ def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
     G: (n_code, n_bits) array coding matrix.
 
     """
+    seed = utils.check_random_state(seed)
+
     H = parity_check_matrix(n_code, d_v, d_c, seed=seed)
     if systematic:
         H, G = coding_matrix_systematic(H, sparse=sparse)
