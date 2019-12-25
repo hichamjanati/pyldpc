@@ -1,10 +1,10 @@
 """
-================================================
-Coding - Decoding simulation of a random message
-================================================
+==================================
+Parallelization of Log-BP decoding
+==================================
 
-This example shows a simulation of the transmission of a binary message
-through a gaussian white noise channel with an LDPC coding and decoding system.
+This example shows how coding and decoding can be done in parallel to speed
+up computations.
 """
 
 
@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 n = 30
 d_v = 2
 d_c = 3
-seed = np.random.RandomState(42)
+seed = 42
 ##################################################################
 # First we create an LDPC code i.e a pair of decoding and coding matrices
 # H and G. H is a regular parity-check matrix with d_v ones per row
@@ -29,20 +29,22 @@ print("Number of coded bits:", k)
 ##################################################################
 # Now we simulate transmission for different levels of noise and
 # compute the percentage of errors using the bit-error-rate score
-
+# To parallelize coding and decoding, simply stack the messages as columns:
 
 errors = []
 snrs = np.linspace(-2, 10, 20)
 v = np.arange(k) % 2  # fixed k bits message
 n_trials = 50  # number of transmissions with different noise
+V = np.tile(v, (n_trials, 1)).T  # stack v in columns
+
 for snr in snrs:
+    y = encode(G, V, snr, seed=seed)
+    D = decode(H, y, snr)
     error = 0.
-    for ii in range(n_trials):
-        y = encode(G, v, snr, seed=seed)
-        d = decode(H, y, snr)
-        x = get_message(G, d)
-        error += abs(v - x).sum() / k
-    errors.append(error / n_trials)
+    for i in range(n_trials):
+        x = get_message(G, D[:, i])
+        error += abs(v - x).sum() / (k * n_trials)
+    errors.append(error)
 
 plt.figure()
 plt.plot(snrs, errors, color="indianred")

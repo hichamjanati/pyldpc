@@ -25,6 +25,6 @@ def test_audio(systematic, sparse):
     audio = rnd.randint(0, 255, size=2)
     audio_bin = audio2bin(audio)
     coded, noisy = ldpc_audio.encode_audio(G, audio_bin, snr, seed)
-    x = ldpc_audio.decode_audio(G, H, coded, snr)
+    x = ldpc_audio.decode_audio(G, H, coded, snr, audio_bin.shape)
     ber = ldpc_audio.ber_audio(audio_bin, audio2bin(x))
     assert ber == 0

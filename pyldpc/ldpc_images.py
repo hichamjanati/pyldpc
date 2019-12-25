@@ -1,9 +1,8 @@
 import numpy as np
 from .utils_img import (bin2gray, bin2rgb)
 from .encoder import encode
-from .decoder import _decode_logbp_ext, get_message
-from .utils import bitsandnodes
-import scipy
+from .decoder import get_message, decode
+from .utils import bitsandnodes, check_random_state
 import warnings
 
 
@@ -20,48 +19,52 @@ def encode_img(tG, img_bin, snr, seed=None):
 
     Returns
     -------
-    coded_img: array (height, width, n) image in the codeword space
+    coded_img: array (n, n_blocks) image in the codeword space
     noisy_img: array (height, width, k) visualization of the noisy image
 
     """
+    seed = check_random_state(seed)
     n, k = tG.shape
 
     height, width, depth = img_bin.shape
+    if depth not in [8, 24]:
+        raise ValueError("The expected dimension of a binary image is "
+                         "(width, height, 8) for grayscale images or "
+                         "(width, height, 24) for RGB images; got %s"
+                         % list(img_bin.shape))
+    img_bin = img_bin.flatten()
+    n_bits_total = img_bin.size
+    n_blocks = n_bits_total // k
+    residual = n_bits_total % k
+    if residual:
+        n_blocks += 1
+    resized_img = np.zeros(k * n_blocks)
+    resized_img[:n_bits_total] = img_bin
 
-    if k != 8 and k != 24:
-        raise ValueError("""Coding matrix must have 8 xor 24 rows
-                         ( grayscale images xor rgb images)""")
+    codeword = encode(tG, resized_img.reshape(k, n_blocks), snr, seed)
+    noisy_img = (codeword.flatten()[:n_bits_total] < 0).astype(int)
+    noisy_img = noisy_img.reshape(width, height, depth)
 
-    coded_img = np.zeros(shape=(height, width, n))
-
-    noisy_img = np.zeros(shape=(height, width, k), dtype=int)
-
-    for i in range(height):
-        for j in range(width):
-            coded_byte_ij = encode(tG, img_bin[i, j, :], snr, seed)
-            coded_img[i, j, :] = coded_byte_ij
-            systematic_part_ij = (coded_byte_ij[:k] < 0).astype(int)
-
-            noisy_img[i, j, :] = systematic_part_ij
-
-    if k == 8:
+    if depth == 8:
         noisy_img = bin2gray(noisy_img)
     else:
         noisy_img = bin2rgb(noisy_img)
 
-    return coded_img, noisy_img
+    return codeword, noisy_img
 
 
-def decode_img(tG, H, img_coded, snr, maxiter=1000):
+def decode_img(tG, H, codeword, snr, img_shape, maxiter=10000):
     """Decode a received noisy image in the codeword.
 
     Parameters
     ----------
     tG: array (n, k) coding matrix G
     H: array (m, n) decoding matrix H
-    img_coded: array (width, height, depth) image recieved in the codeword
+    img_coded: array (n, n_blocks) image recieved in the codeword
     snr: float. signal to noise ratio assumed of the channel.
+    img_shape: tuple of int. Shape of the original binary image.
     maxiter: int. Max number of BP iterations to perform.
+    n_jobs: int. Number of parallel jobs.
 
     Returns
     -------
@@ -69,143 +72,42 @@ def decode_img(tG, H, img_coded, snr, maxiter=1000):
 
     """
     n, k = tG.shape
-    height, width, depth = img_coded.shape
+    _, n_blocks = codeword.shape
 
-    img_decoded_bin = np.zeros(shape=(height, width, k), dtype=int)
-
-    decodefunction = _decode_logbp_ext
+    depth = img_shape[-1]
+    if depth not in [8, 24]:
+        raise ValueError("The expected dimension of a binary image is "
+                         "(width, height, 8) for grayscale images or "
+                         "(width, height, 24) for RGB images; got %s"
+                         % list(img_shape))
+    if len(codeword) != n:
+        raise ValueError("The left dimension of `codeword` must be equal to "
+                         "n, the number of columns of H.")
 
     systematic = True
 
     if not (tG[:k, :] == np.identity(k)).all():
         warnings.warn("""In LDPC applications, using systematic coding matrix
-                         G is highly recommanded to speed up decode.""")
+                         G is highly recommanded to speed up decoding.""")
         systematic = False
 
     bits, nodes = bitsandnodes(H)
-    for i in range(height):
-        for j in range(width):
-            decoded_vector = decodefunction(H, bits, nodes, img_coded[i, j, :],
-                                            snr, maxiter)
-            if systematic:
-                decoded_byte = decoded_vector[:k]
-            else:
-                decoded_byte = get_message(tG, decoded_vector)
 
-            img_decoded_bin[i, j, :] = decoded_byte
-
-    if k == 8:
-        img_decoded = bin2gray(img_decoded_bin)
+    codeword_solution = decode(H, codeword, snr, maxiter)
+    if systematic:
+        decoded = codeword_solution[:k, :]
     else:
-        img_decoded = bin2rgb(img_decoded_bin)
-
-    return img_decoded
-
-
-def encode_img_rowbyrow(tG, img_bin, snr, seed=None):
-    """Encode an image by grouping pixels row by row.
-
-    Parameters
-    ----------
-    tG: array (n, k) coding matrix G
-    img_bin: array (width, height, depth_) image to be coded.
-    snr: float. signal to noise ratio assumed of the channel.
-    seed: int. random state initialization.
-
-    Returns
-    -------
-    coded_img: array (_) image in the codeword space
-    noisy_img: array (_) visualization of the noisy image
-
-    """
-    n, k = tG.shape
-    height, width, depth = img_bin.shape
-
-    if not type(tG) == scipy.sparse.csr_matrix:
-        warnings.warn("""Using scipy.sparse.csr_matrix format is highly
-                    recommanded when computing row by row coding and decode
-                    to speed up calculations.""")
-
-    if not (tG[:k, :] == np.identity(k)).all():
-        raise ValueError("""G must be Systematic. Solving tG.tv = tx for images
-                            has a O(n^3) complexity.""")
-
-    if width * depth != k:
-        raise ValueError("""If the image's shape is (X,Y,Z) k must be equal
-                         to 8*Y (if gray ) or 24*Y (if rgb)""")
-
-    img_bin_reshaped = img_bin.reshape(height, width*depth)
-
-    coded_img = np.zeros(shape=(height+1, n))
-    coded_img[height, 0:2] = width, depth
-
-    for i in range(height):
-        coded_img[i, :] = encode(tG, img_bin_reshaped[i, :], snr, seed)
-
-    noisy_img = (coded_img[:height, :k] < 0).astype(int)
-    noisy_img = noisy_img.reshape(height, width, depth)
+        decoded = np.array([get_message(tG, codeword_solution[:, i])
+                           for i in range(n_blocks)]).T
+    decoded = decoded.flatten()[:np.prod(img_shape)]
+    decoded = decoded.reshape(*img_shape)
 
     if depth == 8:
-        return coded_img, bin2gray(noisy_img)
-    if depth == 24:
-        return coded_img, bin2rgb(noisy_img)
+        decoded_img = bin2gray(decoded)
+    else:
+        decoded_img = bin2rgb(decoded)
 
-
-def decode_img_rowbyrow(tG, H, img_coded, snr, maxiter=1000):
-    """Decode a noisy image in the codeword by grouping pixels in rows.
-
-    Parameters
-    ----------
-    tG: array (n, k) coding matrix G
-    H: array (m, n) decoding matrix H
-    img_coded: array (width, height, depth) image recieved in the codeword
-    snr: float. signal to noise ratio assumed of the channel.
-    maxiter: int. Max number of BP iterations to perform.
-
-    Returns
-    -------
-    img_decode: array(width, height, depth). Decoded image.
-
-    """
-    n, k = tG.shape
-    width, depth = img_coded.astype(int)[-1, 0:2]
-    img_coded = img_coded[:-1, :]
-    height, N = img_coded.shape
-
-    if N != n:
-        raise ValueError("""Coded Image must have the same number of
-                            columns as H""")
-    if depth != 8 and depth != 24:
-        raise ValueError("""Type of image not recognized: third dimension of
-                         the binary image must be 8 for grayscale,
-                         or 24 for rgb images""")
-
-    if not (tG[:k, :] == np.identity(k)).all():
-        raise ValueError("""G must be Systematic. Solving tG.tv = tx for images
-                            has a O(n^3) complexity""")
-
-    if not type(H) == scipy.sparse.csr_matrix:
-        warnings.warn("""The matrix H provided is not a csr object. Using
-                         scipy.sparse.csr_matrix format is highly
-                         recommanded when doing row by row coding and
-                         decoding to speed up calculations.""")
-
-    img_decoded_bin = np.zeros(shape=(height, k), dtype=int)
-
-    decodefunction = _decode_logbp_ext
-    bits, nodes = bitsandnodes(H)
-
-    for i in range(height):
-        decoded_vector = decodefunction(H, bits, nodes, img_coded[i, :], snr,
-                                        maxiter)
-        img_decoded_bin[i, :] = decoded_vector[:k]
-
-    if depth == 8:
-        img_decoded = bin2gray(img_decoded_bin.reshape(height, width, depth))
-    if depth == 24:
-        img_decoded = bin2rgb(img_decoded_bin.reshape(height, width, depth))
-
-    return img_decoded
+    return decoded_img
 
 
 def ber_img(original_img_bin, decoded_img_bin):

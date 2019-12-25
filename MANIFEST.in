@@ -20,3 +20,4 @@ recursive-include pyldpc *.py
 
 # added by check_manifest.py
 recursive-include examples *.jpg
+recursive-include examples *.png

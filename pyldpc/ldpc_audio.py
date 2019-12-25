@@ -3,8 +3,7 @@ import warnings
 
 from .utils_audio import bin2audio
 from .encoder import encode
-from .decoder import _decode_logbp_ext, get_message
-from .utils import bitsandnodes
+from .decoder import get_message, decode
 
 
 def encode_audio(tG, audio_bin, snr, seed=None):
@@ -26,28 +25,29 @@ def encode_audio(tG, audio_bin, snr, seed=None):
 
     """
     n, k = tG.shape
-    length = audio_bin.shape[0]
+    length, depth = audio_bin.shape
+    if depth != 17:
+        raise ValueError("The last dimension of `audio_bin` must be 17."
+                         "Got %s. See `pyldpc.utils.audio2bin`." % depth)
 
-    if k != 17:
-        raise ValueError("""coding matrix G must have 17 rows (audio files are
-                            written in int16 which is equivalent to uint17)""")
+    audio_bin = audio_bin.flatten()
+    n_bits_total = audio_bin.size
+    n_blocks = n_bits_total // k
+    residual = n_bits_total % k
+    if residual:
+        n_blocks += 1
+    resized_audio = np.zeros(k * n_blocks)
+    resized_audio[:n_bits_total] = audio_bin
 
-    coded_audio = np.zeros(shape=(length, n))
-
-    noisy_audio = np.zeros(shape=(length, k), dtype=int)
-
-    for j in range(length):
-        coded_number_j = encode(tG, audio_bin[j, :], snr, seed)
-        coded_audio[j, :] = coded_number_j
-        systematic_part_j = (coded_number_j[:k] < 0).astype(int)
-        noisy_audio[j, :] = systematic_part_j
-
+    codeword = encode(tG, resized_audio.reshape(k, n_blocks), snr, seed)
+    noisy_audio = (codeword.flatten()[:n_bits_total] < 0).astype(int)
+    noisy_audio = noisy_audio.reshape(length, depth)
     noisy_audio = bin2audio(noisy_audio)
 
-    return coded_audio, noisy_audio
+    return codeword, noisy_audio
 
 
-def decode_audio(tG, H, audio_coded, snr, maxiter=1000):
+def decode_audio(tG, H, codeword, snr, audio_shape, maxiter=1000):
     """Decode a received noisy audio file in the codeword.
 
     Parameters
@@ -56,6 +56,7 @@ def decode_audio(tG, H, audio_coded, snr, maxiter=1000):
     H: array (m, n) decoding matrix H
     audio_coded: array (length n) audio in the codeword space
     snr: float. signal to noise ratio assumed of the channel.
+    audio_shape: tuple (2,). Shape of original audio data.
     maxiter: int. Max number of BP iterations to perform.
 
     Returns
@@ -69,11 +70,9 @@ def decode_audio(tG, H, audio_coded, snr, maxiter=1000):
                          (audio files are written in int16 which is
                          equivalent to uint17)""")
 
-    length = audio_coded.shape[0]
+    _, n_blocks = codeword.shape
 
-    audio_decoded_bin = np.zeros(shape=(length, k), dtype=int)
-
-    decodefunction = _decode_logbp_ext
+    # decodefunction = _decode_logbp_ext
     systematic = True
 
     if not (tG[:k, :] == np.identity(k)).all():
@@ -81,20 +80,16 @@ def decode_audio(tG, H, audio_coded, snr, maxiter=1000):
                          G is highly recommanded to speed up decode.""")
         systematic = False
 
-    bits, nodes = bitsandnodes(H)
+    codeword_solution = decode(H, codeword, snr, maxiter)
+    if systematic:
+        decoded = codeword_solution[:k, :]
+    else:
+        decoded = np.array([get_message(tG, codeword_solution[:, i])
+                           for i in range(n_blocks)]).T
+    decoded = decoded.flatten()[:np.prod(audio_shape)]
+    decoded = decoded.reshape(*audio_shape)
 
-    for j in range(length):
-
-        decoded_vector = decodefunction(H, bits, nodes, audio_coded[j, :],
-                                        snr, maxiter)
-        if systematic:
-            decoded_number = decoded_vector[:k]
-        else:
-            decoded_number = get_message(tG, decoded_vector)
-
-        audio_decoded_bin[j, :] = decoded_number
-
-    audio_decoded = bin2audio(audio_decoded_bin)
+    audio_decoded = bin2audio(decoded)
 
     return audio_decoded
 

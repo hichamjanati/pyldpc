@@ -1,5 +1,6 @@
 """Conversion tools."""
 import math
+import numbers
 import numpy as np
 import scipy
 from scipy.stats import norm
@@ -27,11 +28,11 @@ def bitarray2int(bitarray):
 def binaryproduct(X, Y):
     """Compute a matrix-matrix / vector product in Z/2Z."""
     A = X.dot(Y)
-
-    if type(A) != scipy.sparse.csr_matrix:
-        return A % 2
-
-    return A.toarray() % 2
+    try:
+        A = A.toarray()
+    except AttributeError:
+        pass
+    return A % 2
 
 
 def gaussjordan(X, change=0):
@@ -173,3 +174,23 @@ def gausselimination(A, b):
                 b[i] = abs(b[i]-b[j])
 
     return A, b
+
+
+def check_random_state(seed):
+    """Turn seed into a np.random.RandomState instance
+    Parameters
+    ----------
+    seed : None | int | instance of RandomState
+        If seed is None, return the RandomState singleton used by np.random.
+        If seed is an int, return a new RandomState instance seeded with seed.
+        If seed is already a RandomState instance, return it.
+        Otherwise raise ValueError.
+    """
+    if seed is None or seed is np.random:
+        return np.random.mtrand._rand
+    if isinstance(seed, numbers.Integral):
+        return np.random.RandomState(seed)
+    if isinstance(seed, np.random.RandomState):
+        return seed
+    raise ValueError('%r cannot be used to seed a numpy.random.RandomState'
+                     ' instance' % seed)
