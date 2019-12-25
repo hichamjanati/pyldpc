@@ -103,7 +103,7 @@ def _inner_logbp_loop(bits, nodes, Lc, Lq, Lr, n_iter):
                     Lq[i, j] += Lr[mji[kk], j]
 
     # LLR a posteriori:
-    L_posteriori = np.zeros(n, dtype=float64)
+    L_posteriori = np.zeros(n)
     for j in range(n):
         mj = nodes[j]
         L_posteriori[j] = Lc[j] + Lr[mj, j].sum()
