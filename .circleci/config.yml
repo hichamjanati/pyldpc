@@ -20,7 +20,7 @@ jobs:
             pip install download
             python setup.py build_ext --inplace
             pip install -e .
-            cd doc
+            cd docs
             make html
       - store_artifacts:
           path: doc/_build/html
