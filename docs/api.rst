@@ -15,3 +15,5 @@ Functions
    :toctree: generated/
 
    make_ldpc
+   encode
+   decode

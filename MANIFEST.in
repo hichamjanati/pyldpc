@@ -3,13 +3,13 @@ include *.yml
 include .coveragerc
 include LICENSE
 include Makefile
-recursive-include doc *.bat
-recursive-include doc *.css
-recursive-include doc *.gif
-recursive-include doc *.js
-recursive-include doc *.py
-recursive-include doc *.rst
-recursive-include doc Makefile
+recursive-include docs *.bat
+recursive-include docs *.css
+recursive-include docs *.gif
+recursive-include docs *.js
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
 recursive-include examples *.py
 recursive-include examples *.txt
 recursive-include pyldpc *.DS_Store
@@ -21,3 +21,17 @@ recursive-include pyldpc *.py
 # added by check_manifest.py
 recursive-include examples *.jpg
 recursive-include examples *.png
+
+
+recursive-include docs *.bat
+recursive-include docs *.css
+recursive-include docs *.db
+recursive-include docs *.examples
+recursive-include docs *.ipynb
+recursive-include docs *.js
+recursive-include docs *.md5
+recursive-include docs *.pickle
+recursive-include docs *.png
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs *.zip
