@@ -1,5 +1,5 @@
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_
+|Travis|_ |AppVeyor|_ |Codecov|_
 
 .. |Travis| image:: https://travis-ci.com/hichamjanati/pyldpc.svg?branch=master
 .. _Travis: https://travis-ci.com/hichamjanati/pyldpc
@@ -10,14 +10,11 @@
 .. |Codecov| image:: https://codecov.io/gh/hichamjanati/pyldpc/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/hichamjanati/pyldpc
 
-.. |CircleCI| image:: https://circleci.com/gh/hichamjanati/pyldpc.svg?style=svg
-.. _CircleCI: https://circleci.com/gh/hichamjanati/pyldpc/tree/master
-
 
 =============================================
 **Simulation of LDPC Codes & Applications**
 =============================================
-*version 0.7.7*
+*version 0.7.8*
 
 Description:
 ------------

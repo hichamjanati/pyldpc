@@ -18,7 +18,7 @@ if __name__ == "__main__":
           packages=find_packages(),
           include_dirs=[np.get_include()],
           extras_require=EXTRAS_REQUIRE,
-          version='0.7.7',
+          version='0.7.8',
           description='Simulation of Low Density Parity Check Codes ldpc',
           long_description=readme(),
           classifiers=[
