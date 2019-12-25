@@ -6,14 +6,9 @@ import pytest
 from itertools import product
 
 
-sparse = True
-log = True
-systematic = True
-
-
-@pytest.mark.parametrize("systematic, log, sparse",
-                         product([True, False], [False, True], [False, True]))
-def test_audio(systematic, log, sparse):
+@pytest.mark.parametrize("systematic, sparse",
+                         product([True, False], [False, True]))
+def test_audio(systematic, sparse):
 
     n = 48
     d_v = 2
@@ -25,11 +20,11 @@ def test_audio(systematic, log, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 100
+    snr = 1000
 
-    audio = rnd.randint(0, 255, size=5)
+    audio = rnd.randint(0, 255, size=2)
     audio_bin = audio2bin(audio)
     coded, noisy = ldpc_audio.encode_audio(G, audio_bin, snr, seed)
-    x = ldpc_audio.decode_audio(G, H, coded, snr, maxiter=10, log=log)
+    x = ldpc_audio.decode_audio(G, H, coded, snr)
     ber = ldpc_audio.ber_audio(audio_bin, audio2bin(x))
     assert ber == 0

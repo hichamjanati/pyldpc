@@ -1,72 +1,9 @@
 import numpy as np
-
-
-def int2bitarray(N, k):
-    """
-    Changes array's base from int (base 10) to binary (base 2)
-
-    Parameters:
-
-    N: int N
-    k: Width of the binary array you would like to change N into.
-    N must not be greater than 2^k - 1.
-
-    >> Examples: int2bitarray(6,3) returns [1, 1, 0]
-                 int2bitarray(6,5) returns [0, 0, 1, 1,0]
-                 int2bitarray(255,8) returns [1, 1, 1, 1, 1, 1, 1, 1]
-                 int2bitarray(255,10) returns [0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
-
-
-    """
-
-    binary_string = bin(N)
-    length = len(binary_string)
-    bitarray = np.zeros(k, 'int')
-    for i in range(length-2):
-        bitarray[k-i-1] = int(binary_string[length-i-1])
-
-    return bitarray
-
-
-def bitarray2int(bitarray):
-
-    """ Changes array's base from binary (base 2) to int (base 10).
-
-    Parameters:
-
-    bitarray: Binary Array.
-
-    >> Examples: bitarray2int([1, 1, 0]) returns 6
-                 bitarray2int([0, 0, 1, 1,0]) returns 6
-                 bitarray2int([1, 1, 1, 1, 1, 1, 1, 1]) returns 255
-    """
-
-    bitstring = "".join([str(i) for i in bitarray])
-
-    return int(bitstring, 2)
+from . import utils
 
 
 def gray2bin(img):
-    """ Puts a GrayScale Image on a binary form
-
-    Parameters:
-    ===========
-
-    img_array: 2-D array of a grayscale image (no 3rd dimension)
-
-    returns:
-
-    3-D img_array in a binary form, each pixel uint8 is
-    transformed to an 8-bits array
-
-    >>> Example:  the grayscale (2x2) image [[2, 127],
-                                             [255, 0]]
-
-    will be conveterted to the (2x2x8) binary image:
-    [[[0, 0, 0, 0, 0, 0, 1, 0],[0, 1, 1, 1, 1, 1, 1, 1]],
-     [[1, 1, 1, 1, 1, 1, 1, 1],[0, 0, 0, 0, 0, 0, 0, 0]]]
-
-    """
+    """Convert a GrayScale Image to a binary array."""
     if not len(img.shape) == 2:
         raise ValueError("""{} must have 2 dimensions.
                          Make sure it\'s a grayscale image.""")
@@ -77,66 +14,25 @@ def gray2bin(img):
 
     for i in range(height):
         for j in range(width):
-            img_bin[i, j, :] = int2bitarray(img[i, j], 8)
+            img_bin[i, j, :] = utils.int2bitarray(img[i, j], 8)
 
     return img_bin
 
 
 def bin2gray(img_bin):
-
-    """ Puts a 8-bits binary Image to uint8
-
-    Parameters:
-
-    img_array: 3-D array (height, width, 8)
-
-    returns:
-
-    2-D img_array in grayscale
-    >>> Example:  the (2x2x8) binary image:
-    [[[0, 0, 0, 0, 0, 0, 1, 0],[0, 1, 1, 1, 1, 1, 1, 1]],
-    [[1, 1, 1, 1, 1, 1, 1, 1],[0, 0, 0, 0, 0, 0, 0, 0]]]
-
-
-    will be conveterted to the (2x2) uint8 image [[2, 127],
-                                                  [255, 0]]
-
-    """
+    """Convert a binary Image to a grayscale image."""
     height, width, k = img_bin.shape
     img_grayscale = np.zeros(shape=(height, width), dtype=np.uint8)
 
     for i in range(height):
         for j in range(width):
-            img_grayscale[i, j] = bitarray2int(img_bin[i, j, :])
+            img_grayscale[i, j] = utils.bitarray2int(img_bin[i, j, :])
 
     return img_grayscale
 
 
 def rgb2bin(img):
-    """ Puts an RGB Image on a binary form
-
-    Parameters:
-
-    img_array: 3-D array of an RGB image ( 3rd dimension = 3)
-
-    returns:
-
-    3-D img_array in a binary form, each pixel is transformed to
-    an 24-bits binary array.
-
-
-    >>> Example:  the grayscale (2x1x3) image [[[2, 127,0]],
-                                               [[255, 0,1]]]
-
-    will be conveterted to the (2x1x24) binary image:
-    [[[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-    0, 0]],
-    [[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 1]]]
-
-
-    """
-
+    """Convert an RGB Image to a binary array."""
     height, width, depth = img.shape
 
     if not depth == 3:
@@ -147,9 +43,9 @@ def rgb2bin(img):
 
     for i in range(height):
         for j in range(width):
-            r = int2bitarray(img[i, j, 0], 8)
-            g = int2bitarray(img[i, j, 1], 8)
-            b = int2bitarray(img[i, j, 2], 8)
+            r = utils.int2bitarray(img[i, j, 0], 8)
+            g = utils.int2bitarray(img[i, j, 1], 8)
+            b = utils.int2bitarray(img[i, j, 2], 8)
 
             img_bin[i, j, :] = np.concatenate((r, g, b))
 
@@ -157,38 +53,15 @@ def rgb2bin(img):
 
 
 def bin2rgb(img_bin):
-
-    """ Puts a 24-bits binary Image to 3xuint8 (RGB)
-
-    Parameters:
-
-    img_array: 3-D array (height, width, 24)
-
-    returns:
-
-    3-D img_array in RGB (height, width, 3)
-
-    >>> Example:  the (2x1x24) binary image:
-
-   [[[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]],
-   [[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]]
-
-
-    will be conveterted to the (2x1x3) RGB image :
-
-    [[[2, 127,0]],
-    [[255, 0,1]]]
-
-    """
-
+    """Convert a binary image to RGB."""
     height, width, depth = img_bin.shape
     img_rgb = np.zeros(shape=(height, width, 3), dtype=np.uint8)
 
     for i in range(height):
         for j in range(width):
-            r = bitarray2int(img_bin[i, j, :8])
-            g = bitarray2int(img_bin[i, j, 8:16])
-            b = bitarray2int(img_bin[i, j, 16:])
+            r = utils.bitarray2int(img_bin[i, j, :8])
+            g = utils.bitarray2int(img_bin[i, j, 8:16])
+            b = utils.bitarray2int(img_bin[i, j, 16:])
 
             img_rgb[i, j] = np.array([r, g, b], dtype=np.uint8)
 

@@ -1,38 +1,45 @@
+"""Coding module."""
 import numpy as np
 from scipy.sparse import csr_matrix
 from . import utils
 
 
-def parity_check_matrix(n, d_v, d_c, seed=None):
+def parity_check_matrix(n_code, d_v, d_c, seed=None):
     """
-    Builds a regular Parity-Check Matrix H following Callager's algorithm.
+    Build a regular Parity-Check Matrix H following Callager's algorithm.
 
     Parameters
     ----------
-    n: int, Number of coding bits.
-    d_v: int, Number of parity-check equations.
-    d_c: int, Number of variables in a parity-check equation. d_c Must be
+    n_code: int, Length of the codewords.
+    d_v: int, Number of parity-check equations including a certain bit.
+        Must be greater or equal to 2.
+    d_c: int, Number of bits in the same parity-check equation. d_c Must be
         greater or equal to d_v and must divide n.
     seed: int, seed of the random generator.
 
     Returns
     -------
-    H: array (m, n). Where m = d_v * n / d_c
-        LDPC regular matrix H.
+    H: array (n_equations, n_code). LDPC regular matrix H.
+        Where n_equations = d_v * n / d_c, the total number of parity-check
+        equations.
 
     """
     rng = np.random.RandomState(seed)
-    if n % d_c:
-        raise ValueError("""d_c must divide n for a regular LDPC matrix H.""")
+
+    if d_v <= 1:
+        raise ValueError("""d_v must be at least 2.""")
 
     if d_c <= d_v:
         raise ValueError("""d_c must be greater than d_v.""")
 
-    m = (n * d_v) // d_c
+    if n_code % d_c:
+        raise ValueError("""d_c must divide n for a regular LDPC matrix H.""")
 
-    block = np.zeros((m // d_v, n), dtype=int)
-    H = np.empty((m, n))
-    block_size = m // d_v
+    n_equations = (n_code * d_v) // d_c
+
+    block = np.zeros((n_equations // d_v, n_code), dtype=int)
+    H = np.empty((n_equations, n_code))
+    block_size = n_equations // d_v
 
     # Filling the first block with consecutive ones in each row of the block
 
@@ -49,27 +56,23 @@ def parity_check_matrix(n, d_v, d_c, seed=None):
 
 
 def coding_matrix(H, sparse=True):
-
-    """
-    Returns the generating coding matrix G given the LDPC matrix H.
+    """Return the generating coding matrix G given the LDPC matrix H.
 
     Parameters
     ----------
-
-    H: array (m, n). Parity check matrix of an LDPC code with n coding bits.
+    H: array (n_equations, n_code). Parity check matrix of an LDPC code with
+        code length `n_code` and `n_equations` number of equations.
     sparse: (boolean, default True): if `True`, scipy.sparse format is used
         to speed up computation.
 
     Returns
     -------
-
-    G.T: array (k, n). Transposed coding matrix.
+    G.T: array (n_bits, n_code). Transposed coding matrix.
 
     """
-
     if type(H) == csr_matrix:
         H = H.toarray()
-    m, n = H.shape
+    n_equations, n_code = H.shape
 
     # DOUBLE GAUSS-JORDAN:
 
@@ -79,10 +82,10 @@ def coding_matrix(H, sparse=True):
 
     Q = tQ.T
 
-    k = n - Href_diag.sum()
+    n_bits = n_code - Href_diag.sum()
 
-    Y = np.zeros(shape=(n, k)).astype(int)
-    Y[n - k:, :] = np.identity(k)
+    Y = np.zeros(shape=(n_code, n_bits)).astype(int)
+    Y[n_code - n_bits:, :] = np.identity(n_bits)
 
     if sparse:
         Q = csr_matrix(Q)
@@ -94,44 +97,41 @@ def coding_matrix(H, sparse=True):
 
 
 def coding_matrix_systematic(H, sparse=True):
-
-    """Computes a coding matrix G in systematic format with an identity block.
+    """Compute a coding matrix G in systematic format with an identity block.
 
     Parameters
     ----------
-
-    H: array (m, n). Parity-check matrix.
+    H: array (n_equations, n_code). Parity-check matrix.
     sparse: (boolean, default True): if `True`, scipy.sparse is used
-    to speed up computation if n > 100.
+    to speed up computation if n_code > 1000.
 
     Returns
     -------
-
-    H_new: (m, n) array. Modified parity-check matrix given by a permutation of
-        the columns of the provided H.
+    H_new: (n_equations, n_code) array. Modified parity-check matrix given by a
+        permutation of the columns of the provided H.
     G_systematic.T: Transposed Systematic Coding matrix associated to H_new.
 
     """
+    n_equations, n_code = H.shape
 
-    m, n = H.shape
-
-    if n > 100 and sparse:
+    if n_code > 1000 and sparse:
         sparse = True
     else:
         sparse = False
 
-    P1 = np.identity(n, dtype=int)
+    P1 = np.identity(n_code, dtype=int)
 
     Hrowreduced = utils.gaussjordan(H)
 
-    k = n - sum([a.any() for a in Hrowreduced])
+    n_bits = n_code - sum([a.any() for a in Hrowreduced])
 
     # After this loop, Hrowreduced will have the form H_ss : | I_(n-k)  A |
 
     while(True):
-        zeros = [i for i in range(min(m, n)) if not Hrowreduced[i, i]]
+        zeros = [i for i in range(min(n_equations, n_code))
+                 if not Hrowreduced[i, i]]
         indice_colonne_a = min(zeros)
-        list_ones = [j for j in range(indice_colonne_a+1, n)
+        list_ones = [j for j in range(indice_colonne_a + 1, n_code)
                      if Hrowreduced[indice_colonne_a, j]]
         if not len(list_ones):
             break
@@ -151,11 +151,11 @@ def coding_matrix_systematic(H, sparse=True):
     # |A  I_(n-k)|
 
     P1 = P1.T
-    identity = list(range(n))
-    sigma = identity[n-k:] + identity[:n-k]
+    identity = list(range(n_code))
+    sigma = identity[n_code - n_bits:] + identity[:n_code - n_bits]
 
-    P2 = np.zeros(shape=(n, n), dtype=int)
-    P2[identity, sigma] = np.ones(n)
+    P2 = np.zeros(shape=(n_code, n_code), dtype=int)
+    P2[identity, sigma] = np.ones(n_code)
 
     if sparse:
         P1 = csr_matrix(P1)
@@ -169,32 +169,35 @@ def coding_matrix_systematic(H, sparse=True):
 
     H_new = utils.binaryproduct(H, np.transpose(P))
 
-    G_systematic = np.zeros((k, n), dtype=int)
-    G_systematic[:, :k] = np.identity(k)
-    G_systematic[:, k:] = (Hrowreduced[:n-k, n-k:]).T
+    G_systematic = np.zeros((n_bits, n_code), dtype=int)
+    G_systematic[:, :n_bits] = np.identity(n_bits)
+    G_systematic[:, n_bits:] = \
+        (Hrowreduced[:n_code - n_bits, n_code - n_bits:]).T
 
     return H_new, G_systematic.T
 
 
-def make_ldpc(n, d_v, d_c, systematic=False, sparse=True, seed=None):
-    """Creates an LDPC coding and decoding matrices H and G.
-    Parameters:
-    -----------
+def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
+    """Create an LDPC coding and decoding matrices H and G.
+
     Parameters
     ----------
-    n: int, Number of coding bits.
-    d_v: int, Number of parity-check equations.
-    d_c: int, Number of variables in a parity-check equation. d_c Must be
+    n_code: int, Length of the codewords.
+    d_v: int, Number of parity-check equations including a certain bit.
+    d_c: int, Number of bits in the same parity-check equation. d_c Must be
         greater or equal to d_v and must divide n.
+    seed: int, seed of the random generator.
     systematic: boolean, default False. if True, constructs a systematic
     coding matrix G.
 
     Returns:
     --------
-    H: (n, m) array with m.d_c = n.d_v with m < n. parity check matrix
-    G: (n, k) array coding matrix."""
+    H: array (n_equations, n_code). Parity check matrix of an LDPC code with
+        code length `n_code` and `n_equations` number of equations.
+    G: (n_code, n_bits) array coding matrix.
 
-    H = parity_check_matrix(n, d_v, d_c, seed=seed)
+    """
+    H = parity_check_matrix(n_code, d_v, d_c, seed=seed)
     if systematic:
         H, G = coding_matrix_systematic(H, sparse=sparse)
     else:

@@ -1,3 +1,4 @@
+"""Conversion tools."""
 import math
 import numpy as np
 import scipy
@@ -5,57 +6,26 @@ from scipy.stats import norm
 pi = math.pi
 
 
-def int2bitarray(N, k):
-    """
-    Changes array's base from int (base 10) to binary (base 2)
-
-    Parameters:
-    ===========
-
-    N: int N
-    k: Width of the binary array you would like to change N into.
-    N must not be greater than 2^k - 1.
-
-    >> Examples: int2bitarray(6,3) returns [1, 1, 0]
-                 int2bitarray(6,5) returns [0, 0, 1, 1,0]
-                 int2bitarray(255,8) returns [1, 1, 1, 1, 1, 1, 1, 1]
-                 int2bitarray(255,10) returns [0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
-
-    """
-
-    binary_string = bin(N)
+def int2bitarray(n, k):
+    """Change an array's base from int (base 10) to binary (base 2)."""
+    binary_string = bin(n)
     length = len(binary_string)
     bitarray = np.zeros(k, 'int')
-    for i in range(length-2):
-        bitarray[k-i-1] = int(binary_string[length-i-1])
+    for i in range(length - 2):
+        bitarray[k - i - 1] = int(binary_string[length - i - 1])
 
     return bitarray
 
 
 def bitarray2int(bitarray):
-
-    """ Changes array's base from binary (base 2) to int (base 10).
-
-    Parameters:
-    ===========
-    bitarray: Binary Array.
-
-    >> Examples: bitarray2int([1, 1, 0]) returns 6
-                 bitarray2int([0, 0, 1, 1,0]) returns 6
-                 bitarray2int([1, 1, 1, 1, 1, 1, 1, 1]) returns 255
-
-    """
-
+    """Change array's base from binary (base 2) to int (base 10)."""
     bitstring = "".join([str(i) for i in bitarray])
 
     return int(bitstring, 2)
 
 
 def binaryproduct(X, Y):
-
-    """ Binary Matrices or Matrix-vector product in Z/2Z.
-    Works with scipy.sparse.csr_matrix matrices X, Y too."""
-
+    """Compute a matrix-matrix / vector product in Z/2Z."""
     A = X.dot(Y)
 
     if type(A) != scipy.sparse.csr_matrix:
@@ -65,34 +35,22 @@ def binaryproduct(X, Y):
 
 
 def gaussjordan(X, change=0):
+    """Compute the binary row reduced echelon form of X.
+
+    Parameters
+    ----------
+    X: array (m, n)
+    change : boolean (default, False). If True returns the inverse transform
+
+    Returns
+    -------
+    if `change` == 'True':
+        A: array (m, n). row reduced form of X.
+        P: tranformations applied to the identity
+    else:
+        A: array (m, n). row reduced form of X.
 
     """
-    Description:
-    Performs the row reduced echelon form of X and returns it.
-    If change = 1, all changes in the X's rows are applied to
-    identity matrix P:
-
-    Let A be our parameter X. refA the reduced echelon form of A.
-    P is the square invertible matrix:
-
-    P.A = Aref.
-
-    -------------------------------------------------
-    Parameters:
-
-    X: 2D-Array.
-    change : boolean (default = 0)
-
-    ------------------------------------------------
-
-    change = 0  (default)
-     >>> Returns 2D-Array Row Reduced Echelon form of Matrix
-
-    change = 1
-    >>> Returns Tuple of 2D-arrays (refX, P) where P is described above.
-
-    """
-
     A = np.copy(X)
     m, n = A.shape
 
@@ -130,7 +88,7 @@ def gaussjordan(X, change=0):
 
 
 def binaryrank(X):
-    """ Computes rank of a binary Matrix using Gauss-Jordan algorithm"""
+    """Compute rank of a binary Matrix using Gauss-Jordan algorithm."""
     A = np.copy(X)
     m, n = A.shape
 
@@ -140,24 +98,20 @@ def binaryrank(X):
 
 
 def f1(y, sigma):
-    """ Normal Density N(1,sigma) """
+    """Compute normal density N(1,sigma)."""
     f = norm.pdf(y, loc=1, scale=sigma)
     return f
 
 
 def fm1(y, sigma):
-    """ Normal Density N(-1,sigma) """
+    """Compute normal density N(-1,sigma)."""
 
     f = norm.pdf(y, loc=-1, scale=sigma)
     return f
 
 
 def bits2i(H, i):
-    """
-    Computes list of elements of N(i)-j:
-    List of variables (bits) connected to Parity node i.
-
-    """
+    """Compute list of variables (bits) connected to Parity node i."""
     if type(H) != scipy.sparse.csr_matrix:
         m, n = H.shape
         return list(np.where(H[i])[0])
@@ -169,67 +123,28 @@ def bits2i(H, i):
 
 
 def nodes2j(H, j):
-
-    """
-    Computes list of elements of M(j):
-    List of nodes (PC equations) connecting variable j.
-
-    """
-
+    """Compute list of nodes (PC equations) connecting variable j."""
     return bits2i(H.T, j)
 
 
 def bitsandnodes(H):
-
+    """Return bits and nodes of a parity-check matrix H."""
     m, n = H.shape
 
     bits = [bits2i(H, i) for i in range(m)]
-    nodes = [nodes2j(H, j)for j in range(n)]
-
+    nodes = [nodes2j(H, j) for j in range(n)]
+    bits = np.array(bits)
+    nodes = np.array(nodes)
     return bits, nodes
 
 
 def incode(H, x):
-
-    """ Computes Binary Product of H and x. If product is null, x is in the code.
-
-        Returns appartenance boolean.
-    """
-
+    """Compute Binary Product of H and x."""
     return (binaryproduct(H, x) == 0).all()
 
 
 def gausselimination(A, b):
-
-    """ Applies Gauss Elimination Algorithm to X in order to solve a
-    linear system X.X = B. X is transformed to row echelon form:
-
-         |1 * * * * * |
-         |0 1 * * * * |
-         |0 0 1 * * * |
-         |0 0 0 1 * * |
-         |0 0 0 0 1 * |
-         |0 0 0 0 0 1 |
-         |0 0 0 0 0 0 |
-         |0 0 0 0 0 0 |
-         |0 0 0 0 0 0 |
-
-    Same row operations are applied on 1-D Array vector B.
-    Both arguments are sent back.
-
-    --------------------------------------
-
-    Parameters:
-
-    X: 2D-array.
-    B:      1D-array. Size must equal number of rows of X.
-
-    -----------------------------------
-    Returns:
-
-    Modified arguments X, B as described above.
-
-         """
+    """Solve linear system in Z/2Z via Gauss Gauss elimination."""
     if type(A) == scipy.sparse.csr_matrix:
         A = A.toarray().copy()
     else:

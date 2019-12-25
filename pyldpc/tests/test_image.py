@@ -6,10 +6,9 @@ import pytest
 from itertools import product
 
 
-@pytest.mark.parametrize("systematic, log, sparse",
-                         product([False, True], [True], [False, True]))
-def test_image_gray(systematic, log, sparse):
-
+@pytest.mark.parametrize("systematic, sparse",
+                         product([False, True], [False, True]))
+def test_image_gray(systematic, sparse):
     n = 21
     d_v = 2
     d_c = 3
@@ -20,21 +19,21 @@ def test_image_gray(systematic, log, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 100
+    snr = 1e3
 
     img = rnd.randint(0, 255, size=(3, 3))
     img_bin = gray2bin(img)
 
     coded, noisy = ldpc_images.encode_img(G, img_bin, snr, seed)
 
-    x = ldpc_images.decode_img(G, H, coded, snr, maxiter=100, log=log)
+    x = ldpc_images.decode_img(G, H, coded, snr)
 
     assert ldpc_images.ber_img(img_bin, gray2bin(x)) == 0
 
 
-@pytest.mark.parametrize("systematic, log, sparse",
-                         product([False, True], [True], [False, True]))
-def test_image_rgb(systematic, log, sparse):
+@pytest.mark.parametrize("systematic, sparse",
+                         product([False, True], [False, True]))
+def test_image_rgb(systematic, sparse):
 
     n = 69
     d_v = 2
@@ -46,20 +45,20 @@ def test_image_rgb(systematic, log, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 100
+    snr = 1e3
 
     img = rnd.randint(0, 255, size=(3, 3, 3))
     img_bin = rgb2bin(img)
     coded, noisy = ldpc_images.encode_img(G, img_bin, snr, seed)
 
-    x = ldpc_images.decode_img(G, H, coded, snr, maxiter=100, log=log)
+    x = ldpc_images.decode_img(G, H, coded, snr)
 
     assert ldpc_images.ber_img(img_bin, rgb2bin(x)) == 0
 
 
-@pytest.mark.parametrize("systematic, log, sparse",
-                         product([True], [True, False], [False, True]))
-def test_image_row(systematic, log, sparse):
+@pytest.mark.parametrize("systematic, sparse",
+                         product([True], [False, True]))
+def test_image_row(systematic, sparse):
     n = 213
     d_v = 2
     d_c = 3
@@ -70,12 +69,12 @@ def test_image_row(systematic, log, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 100
+    snr = 1e3
 
     img = rnd.randint(0, 255, size=(3, 3, 3))
     img_bin = rgb2bin(img)
     coded, noisy = ldpc_images.encode_img_rowbyrow(G, img_bin, snr, seed)
 
-    x = ldpc_images.decode_img_rowbyrow(G, H, coded, snr, maxiter=100, log=log)
+    x = ldpc_images.decode_img_rowbyrow(G, H, coded, snr)
 
     assert ldpc_images.ber_img(img_bin, rgb2bin(x)) == 0
