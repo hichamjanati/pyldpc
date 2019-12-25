@@ -1,5 +1,5 @@
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_
+|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_
 
 .. |Travis| image:: https://travis-ci.com/hichamjanati/pyldpc.svg?branch=master
 .. _Travis: https://travis-ci.com/hichamjanati/pyldpc
@@ -12,10 +12,6 @@
 
 .. |CircleCI| image:: https://circleci.com/gh/hichamjanati/pyldpc.svg?style=svg
 .. _CircleCI: https://circleci.com/gh/hichamjanati/pyldpc/tree/master
-
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/pyldpc/badge/?version=latest
-.. _ReadTheDocs: https://pyldpc.readthedocs.io/en/latest/
-
 
 
 =============================================
