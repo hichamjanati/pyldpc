@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Coding - Decoding simulation of an image &#8212; pyldpc 0.7.7 documentation</title>
+    <title>Coding - Decoding simulation of an image &#8212; pyldpc 0.7.8 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -37,7 +37,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           pyldpc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.7.7</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.7.8</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -179,7 +179,7 @@ and recover the original image via belief-propagation.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Coded eye shape (200, 2521)
-Eye | Decoding time:  0.6544609069824219
+Eye | Decoding time:  0.7229030132293701
 </pre></div>
 </div>
 <p>With RGB images, we proceed similarly</p>
@@ -214,7 +214,7 @@ Eye | Decoding time:  0.6544609069824219
                                           <span class="n">all_imgs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]):</span>
     <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ax_row</span><span class="p">,</span> <span class="n">img_list</span><span class="p">,</span> <span class="n">titles</span><span class="p">):</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="View documentation for matplotlib.pyplot.tight_layout"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
@@ -226,13 +226,13 @@ Eye | Decoding time:  0.6544609069824219
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Tiger shape: (128, 128, 3)
 Tiger Binary shape: (128, 128, 24)
 Coded Tiger shape (200, 7562)
-Tiger | Decoding time:  1.9905340671539307
+Tiger | Decoding time:  2.0134830474853516
 /Users/hichamjanati/Documents/github/pyldpc/examples/plot_image_transmission.py:101: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
   plt.show()
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.655 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  163 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.796 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  159 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-image-transmission-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3a07f9ec31f0ead0b93a822e23a20030/plot_image_transmission.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_image_transmission.py</span></code></a></p>

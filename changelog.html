@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>API Documentation &#8212; pyldpc 0.7.8 documentation</title>
+    <title>Change Log &#8212; pyldpc 0.7.8 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
@@ -14,8 +14,6 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pyldpc.make_ldpc" href="generated/pyldpc.make_ldpc.html" />
-    <link rel="prev" title="Welcome to pyldpc documentation" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -45,7 +43,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="auto_examples/index.html">Examples</a></li>
-                <li><a href="#">API</a></li>
+                <li><a href="api.html">API</a></li>
                 <li><a href="https://github.com/hichamjanati/pyldpc">GitHub</a></li>
             
             
@@ -58,8 +56,8 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Documentation</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul>
@@ -77,8 +75,8 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">API Documentation</a><ul>
-<li><a class="reference internal" href="#code">code</a></li>
+<li><a class="reference internal" href="#">Change Log</a><ul>
+<li><a class="reference internal" href="#version-0-7-8">Version 0.7.8</a></li>
 </ul>
 </li>
 </ul>
@@ -92,7 +90,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="_sources/api.rst.txt"
+  <a href="_sources/changelog.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -116,28 +114,17 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="api-documentation">
-<span id="id1"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="code">
-<h2>code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<p>Functions</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyldpc.make_ldpc.html#pyldpc.make_ldpc" title="pyldpc.make_ldpc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_ldpc</span></code></a>(n_code, d_v, d_c[, systematic, …])</p></td>
-<td><p>Create an LDPC coding and decoding matrices H and G.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/pyldpc.encode.html#pyldpc.encode" title="pyldpc.encode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encode</span></code></a>(tG, v, snr[, seed])</p></td>
-<td><p>Encode a binary message and adds Gaussian noise.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyldpc.decode.html#pyldpc.decode" title="pyldpc.decode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decode</span></code></a>(H, y, snr[, maxiter])</p></td>
-<td><p>Decode a Gaussian noise corrupted n bits message using BP algorithm.</p></td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="change-log">
+<span id="changelog"></span><h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-7-8">
+<h2>Version 0.7.8<a class="headerlink" href="#version-0-7-8" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Fix a major bug in creation of the LDPC matrix H with Gallager’s algorithm.</p></li>
+<li><p>10x speed gain in decoding with numba</p></li>
+<li><p>Make coding and decoding parallelizable by stacking multiple messages.</p></li>
+<li><p>Make images and sound modules compact via parallel coding and decoding.</p></li>
+<li><p>Move documentation from readthedocs to github-pages + add example on images.</p></li>
+</ul>
 </div>
 </div>
 

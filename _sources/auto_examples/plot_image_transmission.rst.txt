@@ -119,7 +119,7 @@ and recover the original image via belief-propagation.
  .. code-block:: none
 
     Coded eye shape (200, 2521)
-    Eye | Decoding time:  0.6544609069824219
+    Eye | Decoding time:  0.7229030132293701
 
 
 
@@ -159,7 +159,7 @@ With RGB images, we proceed similarly
                                               all_imgs, ["gray", None]):
         for ax, data, title in zip(ax_row, img_list, titles):
             ax.imshow(data, cmap=cmap)
-            ax.set_title(title)
+            ax.set_title(title, fontsize=20)
             ax.set_xticks([])
             ax.set_yticks([])
     plt.tight_layout()
@@ -183,7 +183,7 @@ With RGB images, we proceed similarly
     Tiger shape: (128, 128, 3)
     Tiger Binary shape: (128, 128, 24)
     Coded Tiger shape (200, 7562)
-    Tiger | Decoding time:  1.9905340671539307
+    Tiger | Decoding time:  2.0134830474853516
     /Users/hichamjanati/Documents/github/pyldpc/examples/plot_image_transmission.py:101: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
@@ -192,9 +192,9 @@ With RGB images, we proceed similarly
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.655 seconds)
+   **Total running time of the script:** ( 0 minutes  4.796 seconds)
 
-**Estimated memory usage:**  163 MB
+**Estimated memory usage:**  159 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_image_transmission.py:
