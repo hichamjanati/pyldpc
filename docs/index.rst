@@ -20,11 +20,6 @@ Description:
 .. image:: https://media.giphy.com/media/l0COHC49bK6g7yIPm/giphy.gif
 
 
-**Sound coding-decoding example:**
-
- `Sound Transmission <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/Example-Sound.ipynb>`_
-
-
 Installation
 ------------
 

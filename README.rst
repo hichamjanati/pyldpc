@@ -27,11 +27,7 @@ Description:
 .. .. image:: https://media.giphy.com/media/l4KicsAauqIWjeFR6/giphy.gif
 .. image:: https://media.giphy.com/media/l0COHC49bK6g7yIPm/giphy.gif
 
-
-**Sound coding-decoding example:**
-
- `Sound Transmission <http://nbviewer.jupyter.org/github/hichamjanati/pyldpc-tutos/blob/master/Example-Sound.ipynb>`_
-
+An example of coding-decoding is available at `the pyldpc webpage <https://hichamjanati.github.io/pyldpc/>`_.
 
 Installation
 ------------
