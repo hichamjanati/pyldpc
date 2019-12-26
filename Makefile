@@ -61,4 +61,4 @@ doc:
 	make -C doc html-noplot
 
 test-manifest:
-	check-manifest --ignore doc,pyldpc/*/tests,.circleci*,*.c;
+	check-manifest --ignore doc,pyldpc/*/tests,*.c;

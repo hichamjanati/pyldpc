@@ -7,6 +7,8 @@ def readme():
         return f.read()
 
 
+INSTALL_REQUIRES = ['numpy', 'scipy', 'numba']
+
 EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov'],
                   'docs': ['sphinx', 'sphinx-gallery',
                            'sphinx_rtd_theme', 'numpydoc',
@@ -18,8 +20,9 @@ if __name__ == "__main__":
           packages=find_packages(),
           include_dirs=[np.get_include()],
           extras_require=EXTRAS_REQUIRE,
-          version='0.7.7',
-          description='Simulation of Low Density Parity Check Codes ldpc',
+          version='0.7.8',
+          description='Simulation of Low Density Parity Check (LDPC) Codes',
+          install_requires=INSTALL_REQUIRES,
           long_description=readme(),
           classifiers=[
               'Programming Language :: Python :: 3.6',
@@ -30,7 +33,7 @@ if __name__ == "__main__":
               'Intended Audience :: Telecommunications Industry',
               'Natural Language :: English',
           ],
-          keywords='codes ldpc error detection decoding coding pyldpc',
+          keywords='codes ldpc error decoding information theory',
           url='https://github.com/hichamjanati/pyldpc',
           author='Hicham Janati',
           author_email='hicham.janati100@gmail.com',
