@@ -93,7 +93,7 @@ def coding_matrix(H, sparse=True):
 
     tG = utils.binaryproduct(Q, Y)
 
-    return H, tG
+    return tG
 
 
 def coding_matrix_systematic(H, sparse=True):
@@ -130,14 +130,16 @@ def coding_matrix_systematic(H, sparse=True):
     while(True):
         zeros = [i for i in range(min(n_equations, n_code))
                  if not Hrowreduced[i, i]]
-        indice_colonne_a = min(zeros)
+        if len(zeros):
+            indice_colonne_a = min(zeros)
+        else:
+            break
         list_ones = [j for j in range(indice_colonne_a + 1, n_code)
                      if Hrowreduced[indice_colonne_a, j]]
-        if not len(list_ones):
+        if len(list_ones):
+            indice_colonne_b = min(list_ones)
+        else:
             break
-
-        indice_colonne_b = min(list_ones)
-
         aux = Hrowreduced[:, indice_colonne_a].copy()
         Hrowreduced[:, indice_colonne_a] = Hrowreduced[:, indice_colonne_b]
         Hrowreduced[:, indice_colonne_b] = aux
@@ -146,7 +148,7 @@ def coding_matrix_systematic(H, sparse=True):
         P1[:, indice_colonne_a] = P1[:, indice_colonne_b]
         P1[:, indice_colonne_b] = aux
 
-    # NOW, Hrowreduced has the form: | I_(n-k)  A | ,
+    # Now, Hrowreduced has the form: | I_(n-k)  A | ,
     # the permutation above makes it look like :
     # |A  I_(n-k)|
 
@@ -203,5 +205,5 @@ def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
     if systematic:
         H, G = coding_matrix_systematic(H, sparse=sparse)
     else:
-        H, G = coding_matrix(H, sparse=sparse)
+        G = coding_matrix(H, sparse=sparse)
     return H, G
