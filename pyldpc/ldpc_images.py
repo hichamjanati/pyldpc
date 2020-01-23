@@ -2,7 +2,7 @@ import numpy as np
 from .utils_img import (bin2gray, bin2rgb)
 from .encoder import encode
 from .decoder import get_message, decode
-from .utils import bitsandnodes, check_random_state
+from .utils import check_random_state
 import warnings
 
 
@@ -90,8 +90,6 @@ def decode_img(tG, H, codeword, snr, img_shape, maxiter=10000):
         warnings.warn("""In LDPC applications, using systematic coding matrix
                          G is highly recommanded to speed up decoding.""")
         systematic = False
-
-    bits, nodes = bitsandnodes(H)
 
     codeword_solution = decode(H, codeword, snr, maxiter)
     if systematic:
