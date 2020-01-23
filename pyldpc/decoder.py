@@ -6,7 +6,7 @@ from . import utils
 from numba import njit, int64, types, float64
 
 
-def decode(H, y, snr, maxiter=10000):
+def decode(H, y, snr, maxiter=100):
     """Decode a Gaussian noise corrupted n bits message using BP algorithm.
 
     Decoding is performed in parallel if multiple codewords are passed in y.
