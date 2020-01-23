@@ -26,7 +26,8 @@ def decode(H, y, snr, maxiter=10000):
     """
     m, n = H.shape
 
-    bits, nodes = utils.bitsandnodes(H)
+    bits_hist, bits_values, nodes_hist, nodes_values = utils.bitsandnodes(H)
+
     var = 10 ** (-snr / 10)
 
     if y.ndim == 1:
@@ -41,7 +42,8 @@ def decode(H, y, snr, maxiter=10000):
     Lr = np.zeros(shape=(m, n, n_messages))
 
     for n_iter in range(maxiter):
-        Lq, Lr, L_posteriori = _logbp_numba(bits, nodes, Lc, Lq, Lr, n_iter)
+        Lq, Lr, L_posteriori = _logbp_numba(bits_hist, bits_values, nodes_hist,
+                                            nodes_values, Lc, Lq, Lr, n_iter)
         x = np.array(L_posteriori <= 0).astype(int)
 
         product = utils.incode(H, x)
@@ -59,14 +61,20 @@ output_type_log2 = types.Tuple((float64[:, :, :], float64[:, :, :],
                                float64[:, :]))
 
 
-@njit(output_type_log2(int64[:, :], int64[:, :], float64[:, :],
+@njit(output_type_log2(int64[:], int64[:], int64[:], int64[:], float64[:, :],
                        float64[:, :, :],  float64[:, :, :], int64), cache=True)
-def _logbp_numba(bits, nodes, Lc, Lq, Lr, n_iter):
+def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
+                 n_iter):
     """Perform inner ext LogBP solver."""
     m, n, n_messages = Lr.shape
     # step 1 : Horizontal
+
+    bits_counter = 0
+    nodes_counter = 0
     for i in range(m):
-        ni = bits[i]
+        ff = bits_hist[i]
+        ni = bits_values[bits_counter: bits_counter + ff]
+        bits_counter += ff
         for j in ni:
             nij = ni[:]
 
@@ -88,11 +96,12 @@ def _logbp_numba(bits, nodes, Lc, Lq, Lr, n_iter):
                     Lr[i, j, ll] = 1
                 else:
                     Lr[i, j, ll] = np.log(num[ll] / denom[ll])
-
     # step 2 : Vertical
-    for j in range(n):
-        mj = nodes[j]
 
+    for j in range(n):
+        ff = nodes_hist[j]
+        mj = nodes_values[bits_counter: nodes_counter + ff]
+        nodes_counter += ff
         for i in mj:
             mji = mj[:]
             Lq[i, j] = Lc[j]
@@ -103,9 +112,11 @@ def _logbp_numba(bits, nodes, Lc, Lq, Lr, n_iter):
 
     # LLR a posteriori:
     L_posteriori = np.zeros((n, n_messages))
+    nodes_counter = 0
     for j in range(n):
-        mj = nodes[j]
-
+        ff = nodes_hist[j]
+        mj = nodes_values[bits_counter: nodes_counter + ff]
+        nodes_counter += ff
         L_posteriori[j] = Lc[j] + Lr[mj, j].sum(axis=0)
 
     return Lq, Lr, L_posteriori
