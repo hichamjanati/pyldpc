@@ -20,7 +20,7 @@ if __name__ == "__main__":
           packages=find_packages(),
           include_dirs=[np.get_include()],
           extras_require=EXTRAS_REQUIRE,
-          version='0.7.8',
+          version='0.7.9',
           description='Simulation of Low Density Parity Check (LDPC) Codes',
           install_requires=INSTALL_REQUIRES,
           long_description=readme(),
