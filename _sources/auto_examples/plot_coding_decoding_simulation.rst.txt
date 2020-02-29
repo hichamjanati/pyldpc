@@ -62,24 +62,27 @@ and d_c ones per column
 
 Now we simulate transmission for different levels of noise and
 compute the percentage of errors using the bit-error-rate score
+The coding and decoding can be done in parallel by column stacking.
 
 
 .. code-block:: default
-
 
 
     errors = []
     snrs = np.linspace(-2, 10, 20)
     v = np.arange(k) % 2  # fixed k bits message
     n_trials = 50  # number of transmissions with different noise
+    V = np.tile(v, (n_trials, 1)).T  # stack v in columns
+
     for snr in snrs:
+        y = encode(G, V, snr, seed=seed)
+        D = decode(H, y, snr)
         error = 0.
-        for ii in range(n_trials):
-            y = encode(G, v, snr, seed=seed)
-            d = decode(H, y, snr)
-            x = get_message(G, d)
-            error += abs(v - x).sum() / k
-        errors.append(error / n_trials)
+        for i in range(n_trials):
+            x = get_message(G, D[:, i])
+            error += abs(v - x).sum() / (k * n_trials)
+        errors.append(error)
+
 
     plt.figure()
     plt.plot(snrs, errors, color="indianred")
@@ -99,10 +102,10 @@ compute the percentage of errors using the bit-error-rate score
 
  .. code-block:: none
 
-    /Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:56: UserWarning: Decoding stopped before convergence. You may want
+    /Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:63: UserWarning: Decoding stopped before convergence. You may want
                            to increase maxiter
       to increase maxiter""")
-    /Users/hichamjanati/Documents/github/pyldpc/examples/plot_coding_decoding_simulation.py:51: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+    /Users/hichamjanati/Documents/github/pyldpc/examples/plot_coding_decoding_simulation.py:54: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
 
@@ -110,9 +113,9 @@ compute the percentage of errors using the bit-error-rate score
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.491 seconds)
+   **Total running time of the script:** ( 0 minutes  2.458 seconds)
 
-**Estimated memory usage:**  7 MB
+**Estimated memory usage:**  9 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_coding_decoding_simulation.py:

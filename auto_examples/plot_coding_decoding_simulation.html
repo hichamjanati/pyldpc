@@ -145,19 +145,23 @@ and d_c ones per column</p>
 </pre></div>
 </div>
 <p>Now we simulate transmission for different levels of noise and
-compute the percentage of errors using the bit-error-rate score</p>
+compute the percentage of errors using the bit-error-rate score
+The coding and decoding can be done in parallel by column stacking.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">snrs</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html#numpy.linspace" title="View documentation for numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 <span class="n">v</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># fixed k bits message</span>
 <span class="n">n_trials</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c1"># number of transmissions with different noise</span>
+<span class="n">V</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.tile.html#numpy.tile" title="View documentation for numpy.tile"><span class="n">np</span><span class="o">.</span><span class="n">tile</span></a><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">n_trials</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># stack v in columns</span>
+
 <span class="k">for</span> <span class="n">snr</span> <span class="ow">in</span> <span class="n">snrs</span><span class="p">:</span>
+    <span class="n">y</span> <span class="o">=</span> <a href="../generated/pyldpc.encode.html#pyldpc.encode" title="View documentation for pyldpc.encode"><span class="n">encode</span></a><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">D</span> <span class="o">=</span> <a href="../generated/pyldpc.decode.html#pyldpc.decode" title="View documentation for pyldpc.decode"><span class="n">decode</span></a><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">snr</span><span class="p">)</span>
     <span class="n">error</span> <span class="o">=</span> <span class="mf">0.</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <a href="../generated/pyldpc.encode.html#pyldpc.encode" title="View documentation for pyldpc.encode"><span class="n">encode</span></a><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-        <span class="n">d</span> <span class="o">=</span> <a href="../generated/pyldpc.decode.html#pyldpc.decode" title="View documentation for pyldpc.decode"><span class="n">decode</span></a><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">snr</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">get_message</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-        <span class="n">error</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">k</span>
-    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span> <span class="o">/</span> <span class="n">n_trials</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">get_message</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">D</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="n">error</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">)</span>
+    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
 
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="View documentation for matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="View documentation for matplotlib.pyplot.plot"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><span class="n">snrs</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;indianred&quot;</span><span class="p">)</span>
@@ -168,15 +172,15 @@ compute the percentage of errors using the bit-error-rate score</p>
 </div>
 <img alt="../_images/sphx_glr_plot_coding_decoding_simulation_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_coding_decoding_simulation_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:56: UserWarning: Decoding stopped before convergence. You may want
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:63: UserWarning: Decoding stopped before convergence. You may want
                        to increase maxiter
   to increase maxiter&quot;&quot;&quot;)
-/Users/hichamjanati/Documents/github/pyldpc/examples/plot_coding_decoding_simulation.py:51: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+/Users/hichamjanati/Documents/github/pyldpc/examples/plot_coding_decoding_simulation.py:54: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
   plt.show()
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.491 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  7 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.458 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-coding-decoding-simulation-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a65bd7d3b8789e629f08a90e1ae1ebf7/plot_coding_decoding_simulation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_coding_decoding_simulation.py</span></code></a></p>
