@@ -53,7 +53,7 @@ def encode_img(tG, img_bin, snr, seed=None):
     return codeword, noisy_img
 
 
-def decode_img(tG, H, codeword, snr, img_shape, maxiter=10000):
+def decode_img(tG, H, codeword, snr, img_shape, maxiter=100):
     """Decode a received noisy image in the codeword.
 
     Parameters

@@ -6,6 +6,7 @@ import pytest
 from itertools import product
 
 
+@pytest.mark.filterwarnings("ignore: In LDPC applications, using systematic")
 @pytest.mark.parametrize("systematic, sparse",
                          product([True, False], [False, True]))
 def test_audio(systematic, sparse):
@@ -20,7 +21,7 @@ def test_audio(systematic, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 1000
+    snr = 10
 
     audio = rnd.randint(0, 255, size=2)
     audio_bin = audio2bin(audio)

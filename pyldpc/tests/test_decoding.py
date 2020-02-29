@@ -18,7 +18,7 @@ def test_decoding_random(systematic, sparse):
                      sparse=sparse)
     assert not binaryproduct(H, G).any()
     n, k = G.shape
-    snr = 100
+    snr = 10
 
     v, y = encode_random_message(G, snr, seed)
 
@@ -41,7 +41,7 @@ def test_decoding(systematic, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 100
+    snr = 10
 
     v = np.arange(k) % 2
     y = encode(G, v, snr, seed)
