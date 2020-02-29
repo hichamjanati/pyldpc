@@ -6,7 +6,7 @@
 Welcome to pyldpc documentation
 ===============================
 
-*version 0.7.8*
+*version 0.7.9*
 
 Description:
 ------------
