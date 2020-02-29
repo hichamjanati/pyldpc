@@ -72,8 +72,8 @@ To parallelize coding and decoding, simply stack the messages as columns:
 .. code-block:: default
 
 
-    n_messages = np.arange(1, 50)
-    n_runs = 10
+    n_messages = np.arange(1, 20)
+    n_runs = 50
     snr = 10
     times_parallel = []
     times_sequential = []
@@ -126,9 +126,9 @@ To parallelize coding and decoding, simply stack the messages as columns:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.209 seconds)
+   **Total running time of the script:** ( 0 minutes  5.776 seconds)
 
-**Estimated memory usage:**  21 MB
+**Estimated memory usage:**  14 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_parallel_decoding.py:

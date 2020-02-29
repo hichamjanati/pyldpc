@@ -35,8 +35,8 @@ print("Number of coded bits:", k)
 # compute the percentage of errors using the bit-error-rate score
 # To parallelize coding and decoding, simply stack the messages as columns:
 
-n_messages = np.arange(1, 50)
-n_runs = 10
+n_messages = np.arange(1, 20)
+n_runs = 50
 snr = 10
 times_parallel = []
 times_sequential = []
