@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>pyldpc.code &#8212; pyldpc 0.7.8 documentation</title>
+    <title>pyldpc.code &#8212; pyldpc 0.7.9 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -36,7 +36,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           pyldpc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.7.8</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.7.9</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -200,7 +200,7 @@
 
     <span class="n">tG</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">binaryproduct</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">H</span><span class="p">,</span> <span class="n">tG</span>
+    <span class="k">return</span> <span class="n">tG</span>
 
 
 <span class="k">def</span> <span class="nf">coding_matrix_systematic</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -221,7 +221,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_equations</span><span class="p">,</span> <span class="n">n_code</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="k">if</span> <span class="n">n_code</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="ow">and</span> <span class="n">sparse</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">n_code</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="ow">or</span> <span class="n">sparse</span><span class="p">:</span>
         <span class="n">sparse</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sparse</span> <span class="o">=</span> <span class="kc">False</span>
@@ -237,14 +237,16 @@
     <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">zeros</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">n_equations</span><span class="p">,</span> <span class="n">n_code</span><span class="p">))</span>
                  <span class="k">if</span> <span class="ow">not</span> <span class="n">Hrowreduced</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]]</span>
-        <span class="n">indice_colonne_a</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zeros</span><span class="p">):</span>
+            <span class="n">indice_colonne_a</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
         <span class="n">list_ones</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indice_colonne_a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_code</span><span class="p">)</span>
                      <span class="k">if</span> <span class="n">Hrowreduced</span><span class="p">[</span><span class="n">indice_colonne_a</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_ones</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_ones</span><span class="p">):</span>
+            <span class="n">indice_colonne_b</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">list_ones</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">break</span>
-
-        <span class="n">indice_colonne_b</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">list_ones</span><span class="p">)</span>
-
         <span class="n">aux</span> <span class="o">=</span> <span class="n">Hrowreduced</span><span class="p">[:,</span> <span class="n">indice_colonne_a</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">Hrowreduced</span><span class="p">[:,</span> <span class="n">indice_colonne_a</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hrowreduced</span><span class="p">[:,</span> <span class="n">indice_colonne_b</span><span class="p">]</span>
         <span class="n">Hrowreduced</span><span class="p">[:,</span> <span class="n">indice_colonne_b</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux</span>
@@ -253,7 +255,7 @@
         <span class="n">P1</span><span class="p">[:,</span> <span class="n">indice_colonne_a</span><span class="p">]</span> <span class="o">=</span> <span class="n">P1</span><span class="p">[:,</span> <span class="n">indice_colonne_b</span><span class="p">]</span>
         <span class="n">P1</span><span class="p">[:,</span> <span class="n">indice_colonne_b</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux</span>
 
-    <span class="c1"># NOW, Hrowreduced has the form: | I_(n-k)  A | ,</span>
+    <span class="c1"># Now, Hrowreduced has the form: | I_(n-k)  A | ,</span>
     <span class="c1"># the permutation above makes it look like :</span>
     <span class="c1"># |A  I_(n-k)|</span>
 
@@ -310,7 +312,7 @@
     <span class="k">if</span> <span class="n">systematic</span><span class="p">:</span>
         <span class="n">H</span><span class="p">,</span> <span class="n">G</span> <span class="o">=</span> <span class="n">coding_matrix_systematic</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="n">sparse</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">H</span><span class="p">,</span> <span class="n">G</span> <span class="o">=</span> <span class="n">coding_matrix</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="n">sparse</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">coding_matrix</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="n">sparse</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">H</span><span class="p">,</span> <span class="n">G</span></div>
 </pre></div>
 

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>pyldpc.decoder &#8212; pyldpc 0.7.8 documentation</title>
+    <title>pyldpc.decoder &#8212; pyldpc 0.7.9 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -36,7 +36,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           pyldpc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.7.8</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.7.9</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -113,7 +113,7 @@
 <span class="kn">from</span> <span class="nn">numba</span> <span class="k">import</span> <span class="n">njit</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">float64</span>
 
 
-<div class="viewcode-block" id="decode"><a class="viewcode-back" href="../../generated/pyldpc.decode.html#pyldpc.decode">[docs]</a><span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<div class="viewcode-block" id="decode"><a class="viewcode-back" href="../../generated/pyldpc.decode.html#pyldpc.decode">[docs]</a><span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Decode a Gaussian noise corrupted n bits message using BP algorithm.</span>
 
 <span class="sd">    Decoding is performed in parallel if multiple codewords are passed in y.</span>
@@ -133,7 +133,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="n">bits</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">bitsandnodes</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+    <span class="n">bits_hist</span><span class="p">,</span> <span class="n">bits_values</span><span class="p">,</span> <span class="n">nodes_hist</span><span class="p">,</span> <span class="n">nodes_values</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">_bitsandnodes</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+
+    <span class="n">_n_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">_n_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">_n_bits</span> <span class="o">*</span> <span class="n">_n_nodes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="n">_logbp_numba_regular</span>
+        <span class="n">bits_values</span> <span class="o">=</span> <span class="n">bits_values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">nodes_values</span> <span class="o">=</span> <span class="n">nodes_values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="n">_logbp_numba</span>
+
     <span class="n">var</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">snr</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -146,16 +158,13 @@
     <span class="n">Lq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_messages</span><span class="p">))</span>
 
     <span class="n">Lr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_messages</span><span class="p">))</span>
-
     <span class="k">for</span> <span class="n">n_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxiter</span><span class="p">):</span>
-        <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">L_posteriori</span> <span class="o">=</span> <span class="n">_logbp_numba</span><span class="p">(</span><span class="n">bits</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">Lc</span><span class="p">,</span> <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">)</span>
+        <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">L_posteriori</span> <span class="o">=</span> <span class="n">solver</span><span class="p">(</span><span class="n">bits_hist</span><span class="p">,</span> <span class="n">bits_values</span><span class="p">,</span> <span class="n">nodes_hist</span><span class="p">,</span>
+                                      <span class="n">nodes_values</span><span class="p">,</span> <span class="n">Lc</span><span class="p">,</span> <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">L_posteriori</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-
         <span class="n">product</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">incode</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">product</span><span class="p">:</span>
             <span class="k">break</span>
-
     <span class="k">if</span> <span class="n">n_iter</span> <span class="o">==</span> <span class="n">maxiter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;Decoding stopped before convergence. You may want</span>
 <span class="s2">                       to increase maxiter&quot;&quot;&quot;</span><span class="p">)</span>
@@ -166,14 +175,21 @@
                                <span class="n">float64</span><span class="p">[:,</span> <span class="p">:]))</span>
 
 
-<span class="nd">@njit</span><span class="p">(</span><span class="n">output_type_log2</span><span class="p">(</span><span class="n">int64</span><span class="p">[:,</span> <span class="p">:],</span> <span class="n">int64</span><span class="p">[:,</span> <span class="p">:],</span> <span class="n">float64</span><span class="p">[:,</span> <span class="p">:],</span>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">output_type_log2</span><span class="p">(</span><span class="n">int64</span><span class="p">[:],</span> <span class="n">int64</span><span class="p">[:],</span> <span class="n">int64</span><span class="p">[:],</span> <span class="n">int64</span><span class="p">[:],</span> <span class="n">float64</span><span class="p">[:,</span> <span class="p">:],</span>
                        <span class="n">float64</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:],</span>  <span class="n">float64</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">int64</span><span class="p">),</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">_logbp_numba</span><span class="p">(</span><span class="n">bits</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">Lc</span><span class="p">,</span> <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_logbp_numba</span><span class="p">(</span><span class="n">bits_hist</span><span class="p">,</span> <span class="n">bits_values</span><span class="p">,</span> <span class="n">nodes_hist</span><span class="p">,</span> <span class="n">nodes_values</span><span class="p">,</span> <span class="n">Lc</span><span class="p">,</span> <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span>
+                 <span class="n">n_iter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Perform inner ext LogBP solver.&quot;&quot;&quot;</span>
     <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_messages</span> <span class="o">=</span> <span class="n">Lr</span><span class="o">.</span><span class="n">shape</span>
     <span class="c1"># step 1 : Horizontal</span>
+
+    <span class="n">bits_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nodes_counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
-        <span class="n">ni</span> <span class="o">=</span> <span class="n">bits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="c1"># ni = bits[i]</span>
+        <span class="n">ff</span> <span class="o">=</span> <span class="n">bits_hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">ni</span> <span class="o">=</span> <span class="n">bits_values</span><span class="p">[</span><span class="n">bits_counter</span><span class="p">:</span> <span class="n">bits_counter</span> <span class="o">+</span> <span class="n">ff</span><span class="p">]</span>
+        <span class="n">bits_counter</span> <span class="o">+=</span> <span class="n">ff</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ni</span><span class="p">:</span>
             <span class="n">nij</span> <span class="o">=</span> <span class="n">ni</span><span class="p">[:]</span>
 
@@ -198,8 +214,65 @@
 
     <span class="c1"># step 2 : Vertical</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">mj</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="c1"># mj = nodes[j]</span>
+        <span class="n">ff</span> <span class="o">=</span> <span class="n">nodes_hist</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">mj</span> <span class="o">=</span> <span class="n">nodes_values</span><span class="p">[</span><span class="n">nodes_counter</span><span class="p">:</span> <span class="n">nodes_counter</span> <span class="o">+</span> <span class="n">ff</span><span class="p">]</span>
+        <span class="n">nodes_counter</span> <span class="o">+=</span> <span class="n">ff</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mj</span><span class="p">:</span>
+            <span class="n">mji</span> <span class="o">=</span> <span class="n">mj</span><span class="p">[:]</span>
+            <span class="n">Lq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Lc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
 
+            <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mji</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">mji</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">!=</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">Lq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Lr</span><span class="p">[</span><span class="n">mji</span><span class="p">[</span><span class="n">kk</span><span class="p">],</span> <span class="n">j</span><span class="p">]</span>
+
+    <span class="c1"># LLR a posteriori:</span>
+    <span class="n">L_posteriori</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n_messages</span><span class="p">))</span>
+    <span class="n">nodes_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">ff</span> <span class="o">=</span> <span class="n">nodes_hist</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">mj</span> <span class="o">=</span> <span class="n">nodes_values</span><span class="p">[</span><span class="n">nodes_counter</span><span class="p">:</span> <span class="n">nodes_counter</span> <span class="o">+</span> <span class="n">ff</span><span class="p">]</span>
+        <span class="n">nodes_counter</span> <span class="o">+=</span> <span class="n">ff</span>
+        <span class="n">L_posteriori</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Lc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Lr</span><span class="p">[</span><span class="n">mj</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">L_posteriori</span>
+
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">output_type_log2</span><span class="p">(</span><span class="n">int64</span><span class="p">[:],</span> <span class="n">int64</span><span class="p">[:,</span> <span class="p">:],</span> <span class="n">int64</span><span class="p">[:],</span> <span class="n">int64</span><span class="p">[:,</span> <span class="p">:],</span>
+                       <span class="n">float64</span><span class="p">[:,</span> <span class="p">:],</span> <span class="n">float64</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:],</span>  <span class="n">float64</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:],</span>
+                       <span class="n">int64</span><span class="p">),</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_logbp_numba_regular</span><span class="p">(</span><span class="n">bits_hist</span><span class="p">,</span> <span class="n">bits_values</span><span class="p">,</span> <span class="n">nodes_hist</span><span class="p">,</span> <span class="n">nodes_values</span><span class="p">,</span> <span class="n">Lc</span><span class="p">,</span>
+                         <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform inner ext LogBP solver.&quot;&quot;&quot;</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_messages</span> <span class="o">=</span> <span class="n">Lr</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># step 1 : Horizontal</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">ni</span> <span class="o">=</span> <span class="n">bits_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ni</span><span class="p">:</span>
+            <span class="n">nij</span> <span class="o">=</span> <span class="n">ni</span><span class="p">[:]</span>
+
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_messages</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_iter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nij</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">nij</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                        <span class="n">X</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">Lc</span><span class="p">[</span><span class="n">nij</span><span class="p">[</span><span class="n">kk</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nij</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">nij</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                        <span class="n">X</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">Lq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">nij</span><span class="p">[</span><span class="n">kk</span><span class="p">]])</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">X</span>
+            <span class="n">denom</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">X</span>
+            <span class="k">for</span> <span class="n">ll</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_messages</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">num</span><span class="p">[</span><span class="n">ll</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">Lr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">ll</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">denom</span><span class="p">[</span><span class="n">ll</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">Lr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">ll</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Lr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">ll</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="n">ll</span><span class="p">]</span> <span class="o">/</span> <span class="n">denom</span><span class="p">[</span><span class="n">ll</span><span class="p">])</span>
+
+    <span class="c1"># step 2 : Vertical</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">mj</span> <span class="o">=</span> <span class="n">nodes_values</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mj</span><span class="p">:</span>
             <span class="n">mji</span> <span class="o">=</span> <span class="n">mj</span><span class="p">[:]</span>
             <span class="n">Lq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Lc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
@@ -211,8 +284,7 @@
     <span class="c1"># LLR a posteriori:</span>
     <span class="n">L_posteriori</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n_messages</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">mj</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-
+        <span class="n">mj</span> <span class="o">=</span> <span class="n">nodes_values</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="n">L_posteriori</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Lc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Lr</span><span class="p">[</span><span class="n">mj</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Lq</span><span class="p">,</span> <span class="n">Lr</span><span class="p">,</span> <span class="n">L_posteriori</span>

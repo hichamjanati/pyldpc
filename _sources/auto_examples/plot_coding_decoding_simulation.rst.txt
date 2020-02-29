@@ -99,7 +99,7 @@ compute the percentage of errors using the bit-error-rate score
 
  .. code-block:: none
 
-    /Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:54: UserWarning: Decoding stopped before convergence. You may want
+    /Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:56: UserWarning: Decoding stopped before convergence. You may want
                            to increase maxiter
       to increase maxiter""")
     /Users/hichamjanati/Documents/github/pyldpc/examples/plot_coding_decoding_simulation.py:51: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
@@ -110,7 +110,9 @@ compute the percentage of errors using the bit-error-rate score
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  24.036 seconds)
+   **Total running time of the script:** ( 0 minutes  7.491 seconds)
+
+**Estimated memory usage:**  7 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_coding_decoding_simulation.py:

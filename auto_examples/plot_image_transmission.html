@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Coding - Decoding simulation of an image &#8212; pyldpc 0.7.8 documentation</title>
+    <title>Coding - Decoding simulation of an image &#8212; pyldpc 0.7.9 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -37,7 +37,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           pyldpc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.7.8</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.7.9</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -165,7 +165,7 @@ and d_c ones per column</p>
 <p>Now we simulate the transmission with Gaussian white noise
 and recover the original image via belief-propagation.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">snr</span> <span class="o">=</span> <span class="mi">8</span>
-<span class="n">eye_coded</span><span class="p">,</span> <span class="n">eye_noisy</span> <span class="o">=</span> <span class="n">ldpc_images</span><span class="o">.</span><span class="n">encode_img</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">eye_bin</span><span class="p">,</span> <span class="n">snr</span><span class="p">)</span>
+<span class="n">eye_coded</span><span class="p">,</span> <span class="n">eye_noisy</span> <span class="o">=</span> <span class="n">ldpc_images</span><span class="o">.</span><span class="n">encode_img</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">eye_bin</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coded eye shape&quot;</span><span class="p">,</span> <span class="n">eye_coded</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
@@ -179,7 +179,7 @@ and recover the original image via belief-propagation.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Coded eye shape (200, 2521)
-Eye | Decoding time:  0.7229030132293701
+Eye | Decoding time:  0.6242392063140869
 </pre></div>
 </div>
 <p>With RGB images, we proceed similarly</p>
@@ -191,7 +191,7 @@ Eye | Decoding time:  0.7229030132293701
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tiger Binary shape: (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">tiger_bin</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 
-<span class="n">tiger_coded</span><span class="p">,</span> <span class="n">tiger_noisy</span> <span class="o">=</span> <span class="n">ldpc_images</span><span class="o">.</span><span class="n">encode_img</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">tiger_bin</span><span class="p">,</span> <span class="n">snr</span><span class="p">)</span>
+<span class="n">tiger_coded</span><span class="p">,</span> <span class="n">tiger_noisy</span> <span class="o">=</span> <span class="n">ldpc_images</span><span class="o">.</span><span class="n">encode_img</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">tiger_bin</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coded Tiger shape&quot;</span><span class="p">,</span> <span class="n">tiger_coded</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
@@ -204,10 +204,10 @@ Eye | Decoding time:  0.7229030132293701
 <span class="n">error_noisy_tiger</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">tiger_noisy</span> <span class="o">-</span> <span class="n">tiger</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
 
-<span class="n">titles_eye</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="s2">&quot;Noisy | Err = </span><span class="si">%.2f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_noisy_eye</span><span class="p">,</span>
-              <span class="s2">&quot;Decoded | Err = </span><span class="si">%.2f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_decoded_eye</span><span class="p">]</span>
-<span class="n">titles_tiger</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="s2">&quot;Noisy | Err = </span><span class="si">%.2f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_noisy_tiger</span><span class="p">,</span>
-                <span class="s2">&quot;Decoded | Err = </span><span class="si">%.2f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_decoded_tiger</span><span class="p">]</span>
+<span class="n">titles_eye</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="s2">&quot;Noisy | Err = </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_noisy_eye</span><span class="p">,</span>
+              <span class="s2">&quot;Decoded | Err = </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_decoded_eye</span><span class="p">]</span>
+<span class="n">titles_tiger</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="s2">&quot;Noisy | Err = </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_noisy_tiger</span><span class="p">,</span>
+                <span class="s2">&quot;Decoded | Err = </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">error_decoded_tiger</span><span class="p">]</span>
 <span class="n">all_imgs</span> <span class="o">=</span> <span class="p">[[</span><span class="n">eye</span><span class="p">,</span> <span class="n">eye_noisy</span><span class="p">,</span> <span class="n">eye_decoded</span><span class="p">],</span> <span class="p">[</span><span class="n">tiger</span><span class="p">,</span> <span class="n">tiger_noisy</span><span class="p">,</span> <span class="n">tiger_decoded</span><span class="p">]]</span>
 <span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">ax_row</span><span class="p">,</span> <span class="n">titles</span><span class="p">,</span> <span class="n">img_list</span><span class="p">,</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="n">titles_eye</span><span class="p">,</span> <span class="n">titles_tiger</span><span class="p">],</span>
@@ -226,13 +226,13 @@ Eye | Decoding time:  0.7229030132293701
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Tiger shape: (128, 128, 3)
 Tiger Binary shape: (128, 128, 24)
 Coded Tiger shape (200, 7562)
-Tiger | Decoding time:  2.0134830474853516
+Tiger | Decoding time:  1.9988462924957275
 /Users/hichamjanati/Documents/github/pyldpc/examples/plot_image_transmission.py:101: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
   plt.show()
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.796 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  159 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.488 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  175 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-image-transmission-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3a07f9ec31f0ead0b93a822e23a20030/plot_image_transmission.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_image_transmission.py</span></code></a></p>

@@ -101,7 +101,7 @@ To parallelize coding and decoding, simply stack the messages as columns:
 
  .. code-block:: none
 
-    /Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:54: UserWarning: Decoding stopped before convergence. You may want
+    /Users/hichamjanati/Documents/github/pyldpc/pyldpc/decoder.py:56: UserWarning: Decoding stopped before convergence. You may want
                            to increase maxiter
       to increase maxiter""")
     /Users/hichamjanati/Documents/github/pyldpc/examples/plot_parallel_decoding.py:53: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
@@ -112,7 +112,9 @@ To parallelize coding and decoding, simply stack the messages as columns:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  18.945 seconds)
+   **Total running time of the script:** ( 0 minutes  1.252 seconds)
+
+**Estimated memory usage:**  8 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_parallel_decoding.py:

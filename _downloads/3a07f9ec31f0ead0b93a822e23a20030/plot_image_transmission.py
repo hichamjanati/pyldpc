@@ -49,7 +49,7 @@ H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=True, sparse=True)
 # and recover the original image via belief-propagation.
 
 snr = 8
-eye_coded, eye_noisy = ldpc_images.encode_img(G, eye_bin, snr)
+eye_coded, eye_noisy = ldpc_images.encode_img(G, eye_bin, snr, seed=seed)
 
 print("Coded eye shape", eye_coded.shape)
 
@@ -71,7 +71,7 @@ print("Tiger shape: (%s, %s, %s)" % tiger.shape)
 print("Tiger Binary shape: (%s, %s, %s)" % tiger_bin.shape)
 
 
-tiger_coded, tiger_noisy = ldpc_images.encode_img(G, tiger_bin, snr)
+tiger_coded, tiger_noisy = ldpc_images.encode_img(G, tiger_bin, snr, seed=seed)
 
 print("Coded Tiger shape", tiger_coded.shape)
 
@@ -84,10 +84,10 @@ error_decoded_tiger = abs(tiger - tiger_decoded).mean()
 error_noisy_tiger = abs(tiger_noisy - tiger).mean()
 
 
-titles_eye = ["Original", "Noisy | Err = %.2f %%" % error_noisy_eye,
-              "Decoded | Err = %.2f %%" % error_decoded_eye]
-titles_tiger = ["Original", "Noisy | Err = %.2f %%" % error_noisy_tiger,
-                "Decoded | Err = %.2f %%" % error_decoded_tiger]
+titles_eye = ["Original", "Noisy | Err = %.3f %%" % error_noisy_eye,
+              "Decoded | Err = %.3f %%" % error_decoded_eye]
+titles_tiger = ["Original", "Noisy | Err = %.3f %%" % error_noisy_tiger,
+                "Decoded | Err = %.3f %%" % error_decoded_tiger]
 all_imgs = [[eye, eye_noisy, eye_decoded], [tiger, tiger_noisy, tiger_decoded]]
 f, axes = plt.subplots(2, 3, figsize=(18, 12))
 for ax_row, titles, img_list, cmap in zip(axes, [titles_eye, titles_tiger],
