@@ -114,7 +114,7 @@ def coding_matrix_systematic(H, sparse=True):
     """
     n_equations, n_code = H.shape
 
-    if n_code > 1000 and sparse:
+    if n_code > 1000 or sparse:
         sparse = True
     else:
         sparse = False

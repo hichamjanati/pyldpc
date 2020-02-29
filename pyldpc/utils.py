@@ -111,7 +111,7 @@ def fm1(y, sigma):
     return f
 
 
-def bitsandnodes(H):
+def _bitsandnodes(H):
     """Return bits and nodes of a parity-check matrix H."""
     if type(H) != scipy.sparse.csr_matrix:
         bits_indices, bits = np.where(H)
@@ -123,6 +123,34 @@ def bitsandnodes(H):
     nodes_histogram = np.bincount(nodes_indices)
 
     return bits_histogram, bits, nodes_histogram, nodes
+
+
+def bits2i(H, i):
+    """Compute list of variables (bits) connected to Parity node i."""
+    if type(H) != scipy.sparse.csr_matrix:
+        m, n = H.shape
+        return list(np.where(H[i])[0])
+
+    indj = H.indptr
+    indi = H.indices
+
+    return [indi[a] for a in range(indj[i], indj[i+1])]
+
+
+def nodes2j(H, j):
+    """Compute list of nodes (PC equations) connecting variable j."""
+    return bits2i(H.T, j)
+
+
+def bitsandnodes(H):
+    """Return bits and nodes of a parity-check matrix H."""
+    m, n = H.shape
+
+    bits = [bits2i(H, i) for i in range(m)]
+    nodes = [nodes2j(H, j) for j in range(n)]
+    bits = np.array(bits)
+    nodes = np.array(nodes)
+    return bits, nodes
 
 
 def incode(H, x):

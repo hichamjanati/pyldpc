@@ -6,7 +6,7 @@ from . import utils
 from numba import njit, int64, types, float64
 
 
-def decode(H, y, snr, maxiter=100):
+def decode(H, y, snr, maxiter=1000):
     """Decode a Gaussian noise corrupted n bits message using BP algorithm.
 
     Decoding is performed in parallel if multiple codewords are passed in y.
@@ -26,7 +26,18 @@ def decode(H, y, snr, maxiter=100):
     """
     m, n = H.shape
 
-    bits_hist, bits_values, nodes_hist, nodes_values = utils.bitsandnodes(H)
+    bits_hist, bits_values, nodes_hist, nodes_values = utils._bitsandnodes(H)
+
+    _n_bits = np.unique(H.sum(0))
+    _n_nodes = np.unique(H.sum(1))
+
+    if _n_bits * _n_nodes == 1:
+        solver = _logbp_numba_regular
+        bits_values = bits_values.reshape(n, -1)
+        nodes_values = nodes_values.reshape(m, -1)
+
+    else:
+        solver = _logbp_numba
 
     var = 10 ** (-snr / 10)
 
@@ -40,17 +51,13 @@ def decode(H, y, snr, maxiter=100):
     Lq = np.zeros(shape=(m, n, n_messages))
 
     Lr = np.zeros(shape=(m, n, n_messages))
-
     for n_iter in range(maxiter):
-        Lq, Lr, L_posteriori = _logbp_numba(bits_hist, bits_values, nodes_hist,
-                                            nodes_values, Lc, Lq, Lr, n_iter)
+        Lq, Lr, L_posteriori = solver(bits_hist, bits_values, nodes_hist,
+                                      nodes_values, Lc, Lq, Lr, n_iter)
         x = np.array(L_posteriori <= 0).astype(int)
-
         product = utils.incode(H, x)
-
         if product:
             break
-
     if n_iter == maxiter - 1:
         warnings.warn("""Decoding stopped before convergence. You may want
                        to increase maxiter""")
@@ -72,6 +79,7 @@ def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
     bits_counter = 0
     nodes_counter = 0
     for i in range(m):
+        # ni = bits[i]
         ff = bits_hist[i]
         ni = bits_values[bits_counter: bits_counter + ff]
         bits_counter += ff
@@ -96,11 +104,12 @@ def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
                     Lr[i, j, ll] = 1
                 else:
                     Lr[i, j, ll] = np.log(num[ll] / denom[ll])
-    # step 2 : Vertical
 
+    # step 2 : Vertical
     for j in range(n):
+        # mj = nodes[j]
         ff = nodes_hist[j]
-        mj = nodes_values[bits_counter: nodes_counter + ff]
+        mj = nodes_values[nodes_counter: nodes_counter + ff]
         nodes_counter += ff
         for i in mj:
             mji = mj[:]
@@ -115,8 +124,60 @@ def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
     nodes_counter = 0
     for j in range(n):
         ff = nodes_hist[j]
-        mj = nodes_values[bits_counter: nodes_counter + ff]
+        mj = nodes_values[nodes_counter: nodes_counter + ff]
         nodes_counter += ff
+        L_posteriori[j] = Lc[j] + Lr[mj, j].sum(axis=0)
+
+    return Lq, Lr, L_posteriori
+
+
+@njit(output_type_log2(int64[:], int64[:, :], int64[:], int64[:, :],
+                       float64[:, :], float64[:, :, :],  float64[:, :, :],
+                       int64), cache=True)
+def _logbp_numba_regular(bits_hist, bits_values, nodes_hist, nodes_values, Lc,
+                         Lq, Lr, n_iter):
+    """Perform inner ext LogBP solver."""
+    m, n, n_messages = Lr.shape
+    # step 1 : Horizontal
+    for i in range(m):
+        ni = bits_values[i]
+        for j in ni:
+            nij = ni[:]
+
+            X = np.ones(n_messages)
+            if n_iter == 0:
+                for kk in range(len(nij)):
+                    if nij[kk] != j:
+                        X *= np.tanh(0.5 * Lc[nij[kk]])
+            else:
+                for kk in range(len(nij)):
+                    if nij[kk] != j:
+                        X *= np.tanh(0.5 * Lq[i, nij[kk]])
+            num = 1 + X
+            denom = 1 - X
+            for ll in range(n_messages):
+                if num[ll] == 0:
+                    Lr[i, j, ll] = -1
+                elif denom[ll] == 0:
+                    Lr[i, j, ll] = 1
+                else:
+                    Lr[i, j, ll] = np.log(num[ll] / denom[ll])
+
+    # step 2 : Vertical
+    for j in range(n):
+        mj = nodes_values[j]
+        for i in mj:
+            mji = mj[:]
+            Lq[i, j] = Lc[j]
+
+            for kk in range(len(mji)):
+                if mji[kk] != i:
+                    Lq[i, j] += Lr[mji[kk], j]
+
+    # LLR a posteriori:
+    L_posteriori = np.zeros((n, n_messages))
+    for j in range(n):
+        mj = nodes_values[j]
         L_posteriori[j] = Lc[j] + Lr[mj, j].sum(axis=0)
 
     return Lq, Lr, L_posteriori
