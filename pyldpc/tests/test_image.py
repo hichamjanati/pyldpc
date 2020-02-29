@@ -6,6 +6,7 @@ import pytest
 from itertools import product
 
 
+@pytest.mark.filterwarnings("ignore: In LDPC applications, using systematic")
 @pytest.mark.parametrize("systematic, sparse",
                          product([False, True], [False, True]))
 def test_image_gray(systematic, sparse):
@@ -19,7 +20,7 @@ def test_image_gray(systematic, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 1e3
+    snr = 10
 
     img = rnd.randint(0, 255, size=(3, 3))
     img_bin = gray2bin(img)
@@ -32,6 +33,7 @@ def test_image_gray(systematic, sparse):
     assert ldpc_images.ber_img(img_bin, gray2bin(x)) == 0
 
 
+@pytest.mark.filterwarnings("ignore: In LDPC applications, using systematic")
 @pytest.mark.parametrize("systematic, sparse",
                          product([False, True], [False, True]))
 def test_image_rgb(systematic, sparse):
@@ -46,7 +48,7 @@ def test_image_rgb(systematic, sparse):
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
-    snr = 1e3
+    snr = 10
 
     img = rnd.randint(0, 255, size=(3, 3, 3))
     img_bin = rgb2bin(img)
