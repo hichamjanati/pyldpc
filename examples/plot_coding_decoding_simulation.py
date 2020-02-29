@@ -29,20 +29,23 @@ print("Number of coded bits:", k)
 ##################################################################
 # Now we simulate transmission for different levels of noise and
 # compute the percentage of errors using the bit-error-rate score
-
+# The coding and decoding can be done in parallel by column stacking.
 
 errors = []
 snrs = np.linspace(-2, 10, 20)
 v = np.arange(k) % 2  # fixed k bits message
 n_trials = 50  # number of transmissions with different noise
+V = np.tile(v, (n_trials, 1)).T  # stack v in columns
+
 for snr in snrs:
+    y = encode(G, V, snr, seed=seed)
+    D = decode(H, y, snr)
     error = 0.
-    for ii in range(n_trials):
-        y = encode(G, v, snr, seed=seed)
-        d = decode(H, y, snr)
-        x = get_message(G, d)
-        error += abs(v - x).sum() / k
-    errors.append(error / n_trials)
+    for i in range(n_trials):
+        x = get_message(G, D[:, i])
+        error += abs(v - x).sum() / (k * n_trials)
+    errors.append(error)
+
 
 plt.figure()
 plt.plot(snrs, errors, color="indianred")
