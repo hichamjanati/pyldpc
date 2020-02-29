@@ -5,6 +5,14 @@ Change Log
 ==========
 
 
+Version 0.7.9
+-------------
+
+- Fix a bug with decoding using numba
+
+- Fix bug with systematic coding matrix computation
+
+
 Version 0.7.8
 --------------
 
