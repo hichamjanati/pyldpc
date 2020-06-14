@@ -43,7 +43,7 @@ def encode_img(tG, img_bin, snr, seed=None):
 
     codeword = encode(tG, resized_img.reshape(k, n_blocks), snr, seed)
     noisy_img = (codeword.flatten()[:n_bits_total] < 0).astype(int)
-    noisy_img = noisy_img.reshape(width, height, depth)
+    noisy_img = noisy_img.reshape(height, width, depth)
 
     if depth == 8:
         noisy_img = bin2gray(noisy_img)
