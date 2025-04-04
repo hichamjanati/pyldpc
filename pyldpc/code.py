@@ -253,3 +253,17 @@ def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
     else:
         G = coding_matrix(H, sparse=sparse)
     return H, G
+
+
+class LDPC:
+    def __init__(self, n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
+        self.H, self.G = make_ldpc(n_code, d_v, d_c, systematic, sparse, seed)
+
+    def encode(self, message):
+        return self.G @ message
+
+    def decode(self, codeword):
+        # to do
+        pass
+
+
