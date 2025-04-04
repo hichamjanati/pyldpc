@@ -1,7 +1,53 @@
 """Coding module."""
 import numpy as np
+import math
 from scipy.sparse import csr_matrix
 from . import utils
+
+
+
+def make_regular_ldpc_matrices(message_length, d_v=3, target_rate=0.5, **kwargs):
+    """
+    Calculate the codeword length n for a given message length and target rate.
+
+    Parameters: 
+        message_length: int, Length of the message to be encoded.
+        d_v: int, Number of parity-check equations including a certain bit.
+            Must be greater or equal to 2 (default 3).
+        target_rate: float (0-1) default 0.5, Target rate of the code.
+        **kwargs: Additional arguments to be passed to the make_ldpc function.
+
+    Returns:
+    --------
+    H: array (n_equations, n_code). Parity check matrix of an LDPC code with
+        code length `n_code` and `n_equations` number of equations.
+    G: (n_code, n_bits) array coding matrix.
+
+    """
+    if not (0 < target_rate < 1):
+        raise ValueError("target_rate must be in (0, 1).")
+
+    # Compute d_c using the relation R = 1 - d_v / d_c ⇒ d_c = d_v / (1 - R)
+    d_c_exact = d_v / (1 - target_rate)
+
+    if not math.isclose(d_c_exact, round(d_c_exact)):
+        print(f"Warning: d_c = {d_c_exact:.2f} is not an integer. Rounding up to nearest integer.")
+    
+    d_c = math.ceil(d_c_exact)
+
+    # Recompute actual rate using rounded d_c
+    actual_rate = 1 - d_v / d_c
+
+    # Compute n_code from message_length and actual rate
+    n_code = math.ceil(message_length / actual_rate)
+
+    # Round n_code up to next multiple of d_c so that parity-check matrix can be built
+    if n_code % d_c != 0:
+        n_code = d_c * math.ceil(n_code / d_c)
+
+    H, G = make_ldpc(n_code, d_v, d_c, **kwargs)
+
+    return H, G
 
 
 def parity_check_matrix(n_code, d_v, d_c, seed=None):
@@ -207,3 +253,17 @@ def make_ldpc(n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
     else:
         G = coding_matrix(H, sparse=sparse)
     return H, G
+
+
+class LDPC:
+    def __init__(self, n_code, d_v, d_c, systematic=False, sparse=True, seed=None):
+        self.H, self.G = make_ldpc(n_code, d_v, d_c, systematic, sparse, seed)
+
+    def encode(self, message):
+        return self.G @ message
+
+    def decode(self, codeword):
+        # to do
+        pass
+
+
